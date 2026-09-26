@@ -1,0 +1,388 @@
+{
+  "contractAddress": "0x6c020b13c311da70558a417d4c8d3b1e343268b6",
+  "network": "ARC-TESTNET",
+  "deployerWalletId": "3c2464b2-8369-52e2-a782-800bbeca5396",
+  "contract_code_path": "/home/user/app/contracts/AttendanceOS.sol",
+  "contract_compiled_code_path": "/home/user/app/contracts/out/AttendanceOS.sol/AttendanceOS.json",
+  "contract_network_and_links": {
+    "Arc Testnet": "https://explorer.testnet.arc.io/address/0x6c020b13c311da70558a417d4c8d3b1e343268b6"
+  },
+  "contract_deployments": [
+    {
+      "chain": "Arc Testnet",
+      "address": "0x6c020b13c311da70558a417d4c8d3b1e343268b6",
+      "explorerUrl": "https://explorer.testnet.arc.io/address/0x6c020b13c311da70558a417d4c8d3b1e343268b6",
+      "txHash": "0x456c80fb39b2f4d91e54be09c18682b70adbac23451d693b288fae979d82662c",
+      "deployedAt": "2026-09-24T02:52:01.475Z"
+    }
+  ],
+  "abi": [
+    {
+      "type": "function",
+      "name": "STATUS_ABSEN",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint8",
+          "internalType": "uint8"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "STATUS_CUTI",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint8",
+          "internalType": "uint8"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "STATUS_HADIR",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint8",
+          "internalType": "uint8"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "STATUS_IZIN",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint8",
+          "internalType": "uint8"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "STATUS_NONE",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint8",
+          "internalType": "uint8"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getAttendance",
+      "inputs": [
+        {
+          "name": "company",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "employee",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "year",
+          "type": "uint16",
+          "internalType": "uint16"
+        },
+        {
+          "name": "month",
+          "type": "uint8",
+          "internalType": "uint8"
+        },
+        {
+          "name": "day",
+          "type": "uint8",
+          "internalType": "uint8"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint8",
+          "internalType": "uint8"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getMonthAttendance",
+      "inputs": [
+        {
+          "name": "company",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "employee",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "year",
+          "type": "uint16",
+          "internalType": "uint16"
+        },
+        {
+          "name": "month",
+          "type": "uint8",
+          "internalType": "uint8"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint8[31]",
+          "internalType": "uint8[31]"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getMonthSummary",
+      "inputs": [
+        {
+          "name": "company",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "employee",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "year",
+          "type": "uint16",
+          "internalType": "uint16"
+        },
+        {
+          "name": "month",
+          "type": "uint8",
+          "internalType": "uint8"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "hadir",
+          "type": "uint16",
+          "internalType": "uint16"
+        },
+        {
+          "name": "cuti",
+          "type": "uint16",
+          "internalType": "uint16"
+        },
+        {
+          "name": "izin",
+          "type": "uint16",
+          "internalType": "uint16"
+        },
+        {
+          "name": "absen",
+          "type": "uint16",
+          "internalType": "uint16"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getWorkingDays",
+      "inputs": [
+        {
+          "name": "company",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint8",
+          "internalType": "uint8"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "setAttendance",
+      "inputs": [
+        {
+          "name": "employee",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "year",
+          "type": "uint16",
+          "internalType": "uint16"
+        },
+        {
+          "name": "month",
+          "type": "uint8",
+          "internalType": "uint8"
+        },
+        {
+          "name": "day",
+          "type": "uint8",
+          "internalType": "uint8"
+        },
+        {
+          "name": "status",
+          "type": "uint8",
+          "internalType": "uint8"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "setAttendanceBatch",
+      "inputs": [
+        {
+          "name": "employee",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "year",
+          "type": "uint16",
+          "internalType": "uint16"
+        },
+        {
+          "name": "month",
+          "type": "uint8",
+          "internalType": "uint8"
+        },
+        {
+          "name": "dayList",
+          "type": "uint8[]",
+          "internalType": "uint8[]"
+        },
+        {
+          "name": "statusList",
+          "type": "uint8[]",
+          "internalType": "uint8[]"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "setWorkingDays",
+      "inputs": [
+        {
+          "name": "workingDays",
+          "type": "uint8",
+          "internalType": "uint8"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "event",
+      "name": "AttendanceSet",
+      "inputs": [
+        {
+          "name": "company",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "employee",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "year",
+          "type": "uint16",
+          "indexed": false,
+          "internalType": "uint16"
+        },
+        {
+          "name": "month",
+          "type": "uint8",
+          "indexed": false,
+          "internalType": "uint8"
+        },
+        {
+          "name": "day",
+          "type": "uint8",
+          "indexed": false,
+          "internalType": "uint8"
+        },
+        {
+          "name": "status",
+          "type": "uint8",
+          "indexed": false,
+          "internalType": "uint8"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "WorkingDaysSet",
+      "inputs": [
+        {
+          "name": "company",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "workingDays",
+          "type": "uint8",
+          "indexed": false,
+          "internalType": "uint8"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "error",
+      "name": "ArrayLengthMismatch",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InvalidDate",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InvalidStatus",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InvalidWorkingDays",
+      "inputs": []
+    }
+  ]
+}
