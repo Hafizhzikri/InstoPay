@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+contracts/out/
+contracts/cache/
+
+# Environment & secrets
+.env
+.env.local
+.env.*.local
+.circle/
+
+# Logs
+*.log
+/tmp/
+
+# Editor
+.DS_Store
+.vscode/
+*.swp
+
+# Foundry
+broadcast/
+console.jsonl
+traces.jsonl
