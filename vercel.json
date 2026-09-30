@@ -1,0 +1,10 @@
+{
+  "buildCommand": "vite build",
+  "outputDirectory": "dist",
+  "rewrites": [
+    { "source": "/pitch.html", "destination": "/pitch.html" },
+    { "source": "/demo.html", "destination": "/demo.html" },
+    { "source": "/docs.html", "destination": "/docs.html" },
+    { "source": "/((?!.*\\.).*)", "destination": "/index.html" }
+  ]
+}
