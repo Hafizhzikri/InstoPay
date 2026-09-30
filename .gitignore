@@ -1,8 +1,8 @@
 # Dependencies
 node_modules/
 
-# Build outputs
-contracts/out/
+# Build outputs (keep ABI artifacts for Vercel build)
+contracts/out/**/*.debug.json
 contracts/cache/
 dist/
 
