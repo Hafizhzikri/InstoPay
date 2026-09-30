@@ -48,4 +48,14 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
+        docs: path.resolve(__dirname, 'public/docs.html'),
+        pitch: path.resolve(__dirname, 'public/pitch.html'),
+        demo: path.resolve(__dirname, 'public/demo.html'),
+      },
+    },
+  },
 })
