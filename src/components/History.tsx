@@ -2,19 +2,16 @@ import { motion } from 'framer-motion';
 import {
   CheckCircle2,
   ExternalLink,
-  Loader2,
   CalendarDays,
   DollarSign,
   Users,
 } from 'lucide-react';
-import { useAccount, useReadContract, usePublicClient } from 'wagmi';
+import { useAccount, useReadContract } from 'wagmi';
 import { ConnectKitButton } from 'connectkit';
-import { formatUnits, parseAbiItem } from 'viem';
+import { formatUnits } from 'viem';
 import { useRunCount } from '../hooks/usePayrollContract';
 import { PAYROLLOS_ABI, USDC_DECIMALS, getChainConfig } from '../contract';
 import { useChain } from '../hooks/useChain';
-import { buildTxExplorerUrl } from '@/onchain-facts';
-import { useEffect, useState } from 'react';
 
 interface RunData {
   runId: bigint;
@@ -24,96 +21,19 @@ interface RunData {
   timestamp: bigint;
 }
 
-// Mainnet contract emits PayrollExecuted; testnet contract emits PayrollRun
-// We try PayrollExecuted first, then fallback to PayrollRun
-const PAYROLL_EXECUTED_EVENT = parseAbiItem(
-  'event PayrollExecuted(address indexed company, uint256 indexed runId, string period, uint256 totalAmount, uint256 employeeCount)'
-);
-const PAYROLL_RUN_EVENT = parseAbiItem(
-  'event PayrollRun(address indexed company, uint256 indexed runId, string period, uint256 totalAmount, uint256 employeeCount, uint256 timestamp)'
-);
 
 /**
  * Returns the tx hash for a specific payroll run.
- * Priority:
- *   1. localStorage — instant, no RPC (written by RunPayroll on success)
- *   2. Scan getLogs backwards in 500-block chunks from current head.
- *      Arc Testnet RPC rejects ranges > 10 000 blocks, so we never ask for more.
+ * Reads ONLY from localStorage — written by RunPayroll on success.
+ * No RPC scanning. For old runs without a cached hash, returns undefined immediately.
  */
 function usePayrollRunTxHash(company: `0x${string}`, runId: bigint, chainId: number) {
-  const publicClient = usePublicClient({ chainId });
-  const { payrollosAddress, isMainnet } = getChainConfig(chainId);
-
-  // Use chain+company+runId as cache key so mainnet/testnet don't collide
   const storageKey = `payroll_tx_${chainId}_${company.toLowerCase()}_${runId.toString()}`;
   const cached = (() => {
     try { return localStorage.getItem(storageKey) as `0x${string}` | null; }
     catch { return null; }
   })();
-
-  const [txHash, setTxHash] = useState<`0x${string}` | undefined>(cached ?? undefined);
-  const [searching, setSearching] = useState(!cached);
-
-  useEffect(() => {
-    if (txHash) { setSearching(false); return; }
-    if (!publicClient || !payrollosAddress) { setSearching(false); return; }
-    let cancelled = false;
-    setSearching(true);
-
-    async function scan() {
-      if (!publicClient || !payrollosAddress) return;
-
-      const latestBig = await publicClient.getBlockNumber();
-      const latest = Number(latestBig);
-      const CHUNK = 500;
-      const MAX_CHUNKS = 400;
-
-      // Mainnet uses PayrollExecuted event; testnet uses PayrollRun
-      const primaryEvent = isMainnet ? PAYROLL_EXECUTED_EVENT : PAYROLL_RUN_EVENT;
-      const fallbackEvent = isMainnet ? PAYROLL_RUN_EVENT : PAYROLL_EXECUTED_EVENT;
-
-      for (let i = 0; i < MAX_CHUNKS; i++) {
-        if (cancelled) return;
-        const toBlock = BigInt(latest - i * CHUNK);
-        const fromBlock = BigInt(Math.max(0, latest - (i + 1) * CHUNK));
-
-        // Try primary event first, then fallback
-        for (const event of [primaryEvent, fallbackEvent]) {
-          try {
-            const logs = await publicClient.getLogs({
-              address: payrollosAddress,
-              event,
-              args: { company, runId },
-              fromBlock,
-              toBlock,
-            });
-
-            if (logs.length > 0 && logs[0].transactionHash) {
-              const hash = logs[0].transactionHash;
-              if (!cancelled) {
-                setTxHash(hash);
-                setSearching(false);
-                try { localStorage.setItem(storageKey, hash); } catch { /* ignore */ }
-              }
-              return;
-            }
-          } catch {
-            // Range error or rate-limit — skip, keep scanning
-          }
-        }
-
-        await new Promise((r) => setTimeout(r, 120));
-      }
-
-      if (!cancelled) setSearching(false);
-    }
-
-    void scan();
-    return () => { cancelled = true; };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [publicClient, company, runId, storageKey, payrollosAddress, isMainnet]);
-
-  return { txHash, searching };
+  return { txHash: cached ?? undefined, searching: false };
 }
 
 function PayrollRunCard({ company, runId, chainId, chainName, explorerBase }: {
@@ -129,14 +49,14 @@ function PayrollRunCard({ company, runId, chainId, chainName, explorerBase }: {
     chainId,
   });
 
-  const { txHash, searching } = usePayrollRunTxHash(company, runId, chainId);
+  const { txHash } = usePayrollRunTxHash(company, runId, chainId);
   const run = data as RunData | undefined;
 
   if (isLoading) {
     return (
       <div className="flex items-center gap-2 px-4 py-3 rounded-2xl" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-        <Loader2 className="size-4 animate-spin" style={{ color: 'var(--muted)' }} />
-        <span className="text-sm" style={{ color: 'var(--muted)' }}>Loading run #${runId.toString()}... </span>
+        <div className="size-4 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: 'var(--accent)', borderTopColor: 'transparent' }} />
+        <span className="text-sm" style={{ color: 'var(--muted)' }}>Loading run #{runId.toString()}...</span>
       </div>
     );
   }
@@ -202,18 +122,9 @@ function PayrollRunCard({ company, runId, chainId, chainName, explorerBase }: {
       <div className="px-4 pb-4 flex items-center justify-between">
         <span className="text-xs" style={{ color: 'var(--subtle)' }}>Onchain · {chainName}</span>
 
-        {/* Show spinner while searching for tx hash */}
-        {searching && !txHash && (
-          <span className="flex items-center gap-1 text-xs" style={{ color: 'var(--muted)' }}>
-            <Loader2 className="size-3 animate-spin" />
-            Searching tx...
-          </span>
-        )}
-
-        {/* Once found, show the tx link */}
-        {txHash && (
+        {txHash ? (
           <a
-            href={buildTxExplorerUrl(chainId, txHash)}
+            href={`${explorerBase}/tx/${txHash}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1 text-xs font-medium"
@@ -221,10 +132,7 @@ function PayrollRunCard({ company, runId, chainId, chainName, explorerBase }: {
           >
             View Transaction <ExternalLink className="size-3" />
           </a>
-        )}
-
-        {/* Fallback: search finished but no hash found */}
-        {!searching && !txHash && (
+        ) : (
           <a
             href={`${explorerBase}/address/${payrollosAddress}`}
             target="_blank"
@@ -271,7 +179,7 @@ export function History() {
 
       {isLoading && (
         <div className="flex items-center gap-2 py-8" style={{ color: 'var(--muted)' }}>
-          <Loader2 className="size-4 animate-spin" />
+          <div className="size-4 rounded-full border-2 animate-spin" style={{ borderColor: 'var(--accent)', borderTopColor: 'transparent' }} />
           <span className="text-sm">Reading from blockchain...</span>
         </div>
       )}

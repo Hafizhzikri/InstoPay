@@ -1,19 +1,54 @@
 {
-  "contractAddress": "0x3844ba4564a2a8c76a0d7f1ca6983aab5cdb422e",
+  "contractAddress": "0xbf5888844ed7d8e2feb57cc1d405bd1cad8f85f6",
   "network": "ARC-TESTNET",
   "deployerWalletId": "3c2464b2-8369-52e2-a782-800bbeca5396",
   "contract_code_path": "/home/user/app/contracts/PayrollOS.sol",
   "contract_compiled_code_path": "/home/user/app/contracts/out/PayrollOS.sol/PayrollOS.json",
   "contract_network_and_links": {
-    "Arc Testnet": "https://explorer.testnet.arc.io/address/0x3844ba4564a2a8c76a0d7f1ca6983aab5cdb422e"
+    "Arc Testnet": "https://explorer.testnet.arc.io/address/0xbf5888844ed7d8e2feb57cc1d405bd1cad8f85f6"
   },
   "contract_deployments": [
     {
       "chain": "Arc Testnet",
-      "address": "0x3844ba4564a2a8c76a0d7f1ca6983aab5cdb422e",
-      "explorerUrl": "https://explorer.testnet.arc.io/address/0x3844ba4564a2a8c76a0d7f1ca6983aab5cdb422e",
-      "txHash": "0xffd083ca99dcc38a62e58b590a7906769ed63f438358986eb51377c72d48e4f4",
-      "deployedAt": "2026-09-25T10:52:16.871Z"
+      "address": "0xbf5888844ed7d8e2feb57cc1d405bd1cad8f85f6",
+      "explorerUrl": "https://explorer.testnet.arc.io/address/0xbf5888844ed7d8e2feb57cc1d405bd1cad8f85f6",
+      "txHash": "0xf7247f4dbde6cff3e7838d1abdce33e71d0f80a160a931f4bebaebe94fa4d843",
+      "deployedAt": "2026-09-23T23:04:17.372Z"
+    },
+    {
+      "chain": "Arc Testnet",
+      "address": "0x58cceb223184904cfb4cc58c8d1c47a4abfbc9cd",
+      "explorerUrl": "https://explorer.testnet.arc.io/address/0x58cceb223184904cfb4cc58c8d1c47a4abfbc9cd",
+      "txHash": "0xa42a0a7d5d8186a61e5a4a7eb03bd18a1587e47ca73bebe240421263009bb09e",
+      "deployedAt": "2026-09-23T15:45:22.722Z"
+    },
+    {
+      "chain": "Arc Testnet",
+      "address": "0x9ead0a0417f76de9287c964b01fe8a38045c7973",
+      "explorerUrl": "https://explorer.testnet.arc.io/address/0x9ead0a0417f76de9287c964b01fe8a38045c7973",
+      "txHash": "0x717aeb45e65aeefe9d4c477a76d0d2ad34ad025a138be4212e7f1f3a2dc72840",
+      "deployedAt": "2026-09-23T15:30:21.765Z"
+    },
+    {
+      "chain": "Arc Testnet",
+      "address": "0x05d5a01cfc6508b9dda2ebd6cc7ba1381af7889c",
+      "explorerUrl": "https://explorer.testnet.arc.io/address/0x05d5a01cfc6508b9dda2ebd6cc7ba1381af7889c",
+      "txHash": "0x6a2de595a2a39f4a26ecb9c92a2f758972de4916f8f6704697b9cf7b1a9473a7",
+      "deployedAt": "2026-09-23T13:32:42.495Z"
+    },
+    {
+      "chain": "Arc Testnet",
+      "address": "0xdb0933e97d6e3b1d9722963e0ea398543fa8f9b4",
+      "explorerUrl": "https://explorer.testnet.arc.io/address/0xdb0933e97d6e3b1d9722963e0ea398543fa8f9b4",
+      "txHash": "0x2d0fb401ef2206827fc901886927c0360688f9eefaeb23baf2fab3ee386fdad5",
+      "deployedAt": "2026-09-23T13:18:15.078Z"
+    },
+    {
+      "chain": "Arc Testnet",
+      "address": "0xf36086fdc78917260a1bda0a5f3b368fa7d8cd92",
+      "explorerUrl": "https://explorer.testnet.arc.io/address/0xf36086fdc78917260a1bda0a5f3b368fa7d8cd92",
+      "txHash": "0xf1de8b44d3b8942aaa99ef82becb2d48fb0450566539a08ce5b23d4f3156b14a",
+      "deployedAt": "2026-09-23T04:08:26.873Z"
     }
   ],
   "abi": [
@@ -21,7 +56,7 @@
       "type": "constructor",
       "inputs": [
         {
-          "name": "_usdc",
+          "name": "usdcToken",
           "type": "address",
           "internalType": "address"
         }
@@ -43,6 +78,29 @@
     },
     {
       "type": "function",
+      "name": "_safeTransferFrom",
+      "inputs": [
+        {
+          "name": "from",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "to",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "amount",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
       "name": "getActiveEmployeeCount",
       "inputs": [
         {
@@ -53,7 +111,7 @@
       ],
       "outputs": [
         {
-          "name": "",
+          "name": "count",
           "type": "uint256",
           "internalType": "uint256"
         }
@@ -118,7 +176,7 @@
       ],
       "outputs": [
         {
-          "name": "",
+          "name": "employees_",
           "type": "tuple[]",
           "internalType": "struct PayrollOS.Employee[]",
           "components": [
@@ -166,7 +224,7 @@
         {
           "name": "",
           "type": "tuple",
-          "internalType": "struct PayrollOS.PayrollRun",
+          "internalType": "struct PayrollOS.PayrollRunData",
           "components": [
             {
               "name": "runId",
@@ -192,6 +250,11 @@
               "name": "timestamp",
               "type": "uint256",
               "internalType": "uint256"
+            },
+            {
+              "name": "status",
+              "type": "uint8",
+              "internalType": "enum PayrollOS.PayrollStatus"
             }
           ]
         }
@@ -448,7 +511,7 @@
     },
     {
       "type": "event",
-      "name": "PayrollExecuted",
+      "name": "PayrollRun",
       "inputs": [
         {
           "name": "company",
@@ -479,9 +542,149 @@
           "type": "uint256",
           "indexed": false,
           "internalType": "uint256"
+        },
+        {
+          "name": "timestamp",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
         }
       ],
       "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "SalaryFailed",
+      "inputs": [
+        {
+          "name": "company",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "runId",
+          "type": "uint256",
+          "indexed": true,
+          "internalType": "uint256"
+        },
+        {
+          "name": "wallet",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "reason",
+          "type": "string",
+          "indexed": false,
+          "internalType": "string"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "SalaryPaid",
+      "inputs": [
+        {
+          "name": "company",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "runId",
+          "type": "uint256",
+          "indexed": true,
+          "internalType": "uint256"
+        },
+        {
+          "name": "wallet",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "amount",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        },
+        {
+          "name": "employeeName",
+          "type": "string",
+          "indexed": false,
+          "internalType": "string"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "error",
+      "name": "AlreadyRegistered",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "BatchTooLarge",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "EmployeeNotFound",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "EmptyPeriod",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "EmptySelection",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InvalidBatchRange",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "PayrollRunInProgress",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "PeriodMismatch",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "ReentrancyGuardReentrantCall",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "SafeERC20FailedOperation",
+      "inputs": [
+        {
+          "name": "token",
+          "type": "address",
+          "internalType": "address"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "ZeroAddress",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "ZeroAmount",
+      "inputs": []
     }
   ]
 }

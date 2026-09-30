@@ -1,27 +1,27 @@
 # Dependencies
 node_modules/
 
-# Build output
-dist/
+# Build outputs
 contracts/out/
 contracts/cache/
+dist/
 
-# Environment & secrets
+# Env & secrets
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
 .circle/
 
-# Logs
-*.log
-/tmp/
-
-# Editor
-.DS_Store
-.vscode/
-*.swp
-
-# Foundry
-broadcast/
+# Sandbox logs
 console.jsonl
 traces.jsonl
+
+# Cloned repos (sandbox only)
+instopay-docs/
+instopay-repo/
+
+# Vite cache
+.vite/
+
+# TypeScript build info
+*.tsbuildinfo

@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>InstoPay Docs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      :root {
+        --accent: #2563eb;
+        --accent-soft: #eff6ff;
+        --ink: #0f172a;
+        --muted: #64748b;
+        --subtle: #94a3b8;
+        --border: #e2e8f0;
+        --surface: #ffffff;
+        --canvas: #f8fafc;
+        --success: #10b981;
+        --success-soft: #d1fae5;
+        --warning: #f59e0b;
+        --tip: #6366f1;
+        --tip-soft: #ede9fe;
+        --sidebar-w: 260px;
+      }
+
+      body {
+        font-family: 'DM Sans', sans-serif;
+        background: var(--canvas);
+        color: var(--ink);
+        min-height: 100vh;
+      }
+
+      /* ── Layout ── */
+      .layout { display: flex; min-height: 100vh; }
+
+      /* ── Sidebar ── */
+      .sidebar {
+        width: var(--sidebar-w);
+        background: var(--surface);
+        border-right: 1px solid var(--border);
+        position: fixed;
+        top: 0; left: 0; bottom: 0;
+        overflow-y: auto;
+        z-index: 50;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .sidebar-header {
+        padding: 20px 20px 16px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+      .logo-icon {
+        width: 36px; height: 36px;
+        background: linear-gradient(135deg, #1a3aff, #2563eb);
+        border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        color: white; font-size: 16px; font-weight: 700;
+      }
+      .logo-text { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 17px; color: var(--ink); }
+      .logo-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+      .nav { padding: 12px 0; flex: 1; }
+      .nav-section { padding: 16px 20px 6px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--subtle); }
+
+      .nav-item {
+        display: flex; align-items: center; gap: 10px;
+        padding: 8px 20px;
+        font-size: 13.5px; font-weight: 500;
+        color: var(--muted);
+        cursor: pointer;
+        border-left: 3px solid transparent;
+        text-decoration: none;
+        transition: all 0.15s;
+      }
+      .nav-item:hover { background: var(--canvas); color: var(--ink); }
+      .nav-item.active { background: var(--accent-soft); color: var(--accent); border-left-color: var(--accent); font-weight: 600; }
+      .nav-item .icon { font-size: 15px; width: 18px; text-align: center; }
+
+      .sidebar-footer {
+        padding: 16px 20px;
+        border-top: 1px solid var(--border);
+        font-size: 11px;
+        color: var(--subtle);
+      }
+      .sidebar-footer a { color: var(--accent); text-decoration: none; }
+
+      /* ── Main content ── */
+      .main {
+        margin-left: var(--sidebar-w);
+        flex: 1;
+        min-height: 100vh;
+      }
+
+      .topbar {
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        padding: 14px 40px;
+        display: flex; align-items: center; justify-content: space-between;
+        position: sticky; top: 0; z-index: 40;
+      }
+
+      .breadcrumb { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+      .breadcrumb .sep { color: var(--border); }
+      .breadcrumb .current { color: var(--ink); font-weight: 600; }
+
+      .back-btn {
+        display: flex; align-items: center; gap: 6px;
+        font-size: 13px; font-weight: 500;
+        color: var(--accent);
+        text-decoration: none;
+        padding: 6px 12px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        cursor: pointer;
+        background: var(--surface);
+        transition: all 0.15s;
+      }
+      .back-btn:hover { background: var(--accent-soft); border-color: var(--accent); }
+
+      .content { padding: 40px; max-width: 780px; }
+
+      /* ── Typography ── */
+      .section { display: none; }
+      .section.active { display: block; }
+
+      h1 { font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 700; color: var(--ink); margin-bottom: 8px; line-height: 1.2; }
+      .page-desc { font-size: 15px; color: var(--muted); margin-bottom: 32px; line-height: 1.6; }
+
+      h2 { font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 700; color: var(--ink); margin: 32px 0 12px; }
+      h3 { font-size: 15px; font-weight: 600; color: var(--ink); margin: 20px 0 8px; }
+
+      p { font-size: 14px; line-height: 1.75; color: #334155; margin-bottom: 12px; }
+      strong { font-weight: 600; color: var(--ink); }
+
+      ul, ol { padding-left: 20px; margin-bottom: 16px; }
+      li { font-size: 14px; line-height: 1.75; color: #334155; margin-bottom: 4px; }
+
+      code {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12px;
+        background: #f1f5f9;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 1px 6px;
+        color: #0f172a;
+      }
+
+      pre {
+        background: #0f172a;
+        border-radius: 12px;
+        padding: 20px;
+        overflow-x: auto;
+        margin: 16px 0;
+      }
+      pre code {
+        background: none; border: none; padding: 0;
+        color: #e2e8f0;
+        font-size: 13px;
+        line-height: 1.7;
+      }
+
+      /* ── Cards ── */
+      .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+      @media (max-width: 600px) { .card-grid { grid-template-columns: 1fr; } }
+
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 20px;
+      }
+      .card-icon { font-size: 22px; margin-bottom: 10px; }
+      .card h3 { margin: 0 0 6px; font-size: 14px; }
+      .card p { margin: 0; font-size: 13px; }
+
+      /* ── Callouts ── */
+      .callout {
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin: 16px 0;
+        display: flex; gap: 12px; align-items: flex-start;
+        font-size: 13.5px; line-height: 1.6;
+      }
+      .callout.tip { background: var(--tip-soft); border: 1px solid #c7d2fe; color: #4338ca; }
+      .callout.warning { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
+      .callout.info { background: var(--accent-soft); border: 1px solid #bfdbfe; color: #1d4ed8; }
+      .callout.success { background: var(--success-soft); border: 1px solid #a7f3d0; color: #065f46; }
+      .callout-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+      /* ── Steps ── */
+      .steps { margin: 20px 0; }
+      .step { display: flex; gap: 16px; margin-bottom: 20px; }
+      .step-num {
+        width: 32px; height: 32px; border-radius: 50%;
+        background: var(--accent); color: white;
+        font-size: 13px; font-weight: 700;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0; margin-top: 2px;
+        font-family: 'Space Grotesk', sans-serif;
+      }
+      .step-body h3 { margin: 0 0 6px; font-size: 14px; font-weight: 600; color: var(--ink); }
+      .step-body p { margin: 0; font-size: 13.5px; color: #475569; }
+
+      /* ── Table ── */
+      table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; }
+      th { background: var(--canvas); text-align: left; padding: 10px 14px; border-bottom: 2px solid var(--border); font-weight: 600; color: var(--ink); }
+      td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: #334155; vertical-align: top; }
+      tr:hover td { background: #f8fafc; }
+
+      /* ── Status badges ── */
+      .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+      .badge.green { background: var(--success-soft); color: #065f46; }
+      .badge.blue { background: var(--accent-soft); color: #1d4ed8; }
+      .badge.yellow { background: #fffbeb; color: #92400e; }
+      .badge.red { background: #fee2e2; color: #991b1b; }
+
+      /* ── Pagination ── */
+      .pagination { display: flex; justify-content: space-between; align-items: center; margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--border); }
+      .page-link { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--accent); cursor: pointer; padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); text-decoration: none; transition: all 0.15s; }
+      .page-link:hover { background: var(--accent-soft); border-color: var(--accent); }
+      .page-link.hidden { visibility: hidden; }
+
+      /* ── Mobile nav ── */
+      .mobile-nav { display: none; }
+
+      @media (max-width: 768px) {
+        .sidebar { display: none; }
+        .main { margin-left: 0; }
+        .topbar { padding: 12px 16px; }
+        .content { padding: 24px 16px; }
+        .mobile-nav { display: block; }
+        .mobile-select {
+          width: 100%; padding: 10px 14px; border-radius: 10px;
+          border: 1px solid var(--border); background: var(--surface);
+          font-size: 14px; color: var(--ink); margin: 12px 0;
+          font-family: 'DM Sans', sans-serif;
+        }
+      }
+
+      /* Divider */
+      hr { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
+
+      /* Address monospace */
+      .addr { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); word-break: break-all; }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+
+      <!-- ── Sidebar ── -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <a class="logo" href="javascript:void(0)">
+            <div class="logo-icon">$</div>
+            <div>
+              <div class="logo-text">InstoPay</div>
+              <div class="logo-sub">Documentation</div>
+            </div>
+          </a>
+        </div>
+
+        <nav class="nav">
+          <div class="nav-section">Getting Started</div>
+          <a class="nav-item active" onclick="showSection('intro', this)"><span class="icon">📖</span> Introduction</a>
+          <a class="nav-item" onclick="showSection('quickstart', this)"><span class="icon">⚡</span> Quick Start</a>
+
+          <div class="nav-section">Features</div>
+          <a class="nav-item" onclick="showSection('employees', this)"><span class="icon">👥</span> Managing Employees</a>
+          <a class="nav-item" onclick="showSection('attendance', this)"><span class="icon">📋</span> Attendance System</a>
+          <a class="nav-item" onclick="showSection('payroll', this)"><span class="icon">💸</span> Running Payroll</a>
+          <a class="nav-item" onclick="showSection('history', this)"><span class="icon">🕐</span> Payroll History</a>
+
+          <div class="nav-section">Reference</div>
+          <a class="nav-item" onclick="showSection('contracts', this)"><span class="icon">⟨/⟩</span> Smart Contracts</a>
+          <a class="nav-item" onclick="showSection('settings', this)"><span class="icon">⚙️</span> Settings & Network</a>
+          <a class="nav-item" onclick="showSection('faq', this)"><span class="icon">❓</span> FAQ</a>
+        </nav>
+
+        <div class="sidebar-footer">
+          Built with <a href="https://studio.arc.io" target="_blank">Arc Studio</a> · Arc Testnet &amp; Mainnet
+        </div>
+      </aside>
+
+      <!-- ── Main ── -->
+      <main class="main">
+        <div class="topbar">
+          <div class="breadcrumb">
+            <span>InstoPay</span>
+            <span class="sep">/</span>
+            <span class="current" id="breadcrumb-current">Introduction</span>
+          </div>
+          <button class="back-btn" onclick="window.close()">← Close Docs</button>
+        </div>
+
+        <!-- Mobile nav -->
+        <div class="content mobile-nav">
+          <select class="mobile-select" onchange="showSectionById(this.value)">
+            <option value="intro">📖 Introduction</option>
+            <option value="quickstart">⚡ Quick Start</option>
+            <option value="employees">👥 Managing Employees</option>
+            <option value="attendance">📋 Attendance System</option>
+            <option value="payroll">💸 Running Payroll</option>
+            <option value="history">🕐 Payroll History</option>
+            <option value="contracts">⟨/⟩ Smart Contracts</option>
+            <option value="settings">⚙️ Settings & Network</option>
+            <option value="faq">❓ FAQ</option>
+          </select>
+        </div>
+
+        <div class="content">
+
+          <!-- ── Introduction ── -->
+          <div class="section active" id="sec-intro">
+            <h1>Introduction</h1>
+            <p class="page-desc">Welcome to InstoPay — onchain payroll management built on Arc blockchain.</p>
+
+            <p><strong>InstoPay</strong> is an onchain payroll management system built on Arc blockchain. It lets any company manage employees and distribute salaries directly in <strong>USDC</strong> — no banks, no intermediaries, instant transfer.</p>
+
+            <div class="card-grid">
+              <div class="card">
+                <div class="card-icon">⚡</div>
+                <h3>Instant</h3>
+                <p>USDC lands in employee wallets in seconds, not days.</p>
+              </div>
+              <div class="card">
+                <div class="card-icon">🔒</div>
+                <h3>Transparent</h3>
+                <p>Every payroll run is permanently recorded on blockchain.</p>
+              </div>
+              <div class="card">
+                <div class="card-icon">🌐</div>
+                <h3>Multi-Network</h3>
+                <p>Supports Arc Testnet and Arc Mainnet. Switch anytime.</p>
+              </div>
+              <div class="card">
+                <div class="card-icon">🛡️</div>
+                <h3>Non-Custodial</h3>
+                <p>InstoPay never holds your USDC. Funds stay in your wallet.</p>
+              </div>
+            </div>
+
+            <div class="callout tip">
+              <span class="callout-icon">💡</span>
+              <span>InstoPay is <strong>multi-tenant</strong> — every wallet that connects becomes its own independent company. Your employee data is isolated from other users.</span>
+            </div>
+
+            <h2>How It Works</h2>
+            <div class="steps">
+              <div class="step">
+                <div class="step-num">1</div>
+                <div class="step-body">
+                  <h3>Register Employees</h3>
+                  <p>Add employees with their name, position, NIK, wallet address, and net USDC salary. Stored permanently on-chain.</p>
+                </div>
+              </div>
+              <div class="step">
+                <div class="step-num">2</div>
+                <div class="step-body">
+                  <h3>Record Attendance</h3>
+                  <p>Log monthly attendance: Present, Leave (Cuti), Excused (Izin), or Absent. Used to calculate proportional salary.</p>
+                </div>
+              </div>
+              <div class="step">
+                <div class="step-num">3</div>
+                <div class="step-body">
+                  <h3>Approve USDC</h3>
+                  <p>Allow the InstoPay contract to transfer USDC from your wallet. One approval per payroll run.</p>
+                </div>
+              </div>
+              <div class="step">
+                <div class="step-num">4</div>
+                <div class="step-body">
+                  <h3>Run Payroll</h3>
+                  <p>One transaction sends USDC directly to all selected employee wallets. History recorded on-chain forever.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="pagination">
+              <span class="page-link hidden">←</span>
+              <a class="page-link" onclick="showSection('quickstart', null)">Quick Start →</a>
+            </div>
+          </div>
+
+          <!-- ── Quick Start ── -->
+          <div class="section" id="sec-quickstart">
+            <h1>Quick Start</h1>
+            <p class="page-desc">From zero to first payroll in 5 minutes.</p>
+
+            <div class="callout info">
+              <span class="callout-icon">ℹ️</span>
+              <span>You need a Web3 wallet (MetaMask recommended) and testnet USDC. Use the <strong>Get test USDC</strong> button in Arc Studio sidebar to get free testnet USDC.</span>
+            </div>
+
+            <h2>Step 1 — Connect Wallet</h2>
+            <p>Click <strong>Connect Wallet</strong> in the top-right corner of InstoPay. Your wallet address becomes your company identity on-chain. All employees and payroll history are linked to this address.</p>
+
+            <h2>Step 2 — Add Your First Employee</h2>
+            <p>Go to <strong>Employees</strong> → click <strong>Add Employee</strong>. Fill in:</p>
+            <table>
+              <tr><th>Field</th><th>Description</th><th>Example</th></tr>
+              <tr><td><strong>Full Name</strong></td><td>Employee's full name</td><td>Budi Santoso</td></tr>
+              <tr><td><strong>Position</strong></td><td>Job title / jabatan</td><td>Software Engineer</td></tr>
+              <tr><td><strong>NIK</strong></td><td>Employee ID number</td><td>3171012501900001</td></tr>
+              <tr><td><strong>Wallet Address</strong></td><td>0x address to receive USDC</td><td>0xABCD...1234</td></tr>
+              <tr><td><strong>Net Salary (USDC)</strong></td><td>Monthly net salary in USDC</td><td>500</td></tr>
+            </table>
+            <p>Click <strong>Register to Blockchain</strong> and confirm in MetaMask.</p>
+
+            <h2>Step 3 — Run Your First Payroll</h2>
+            <p>Go to <strong>Run Payroll</strong>. Select the period (e.g. October 2026), check employees to pay, then:</p>
+            <ol>
+              <li>Click <strong>Approve USDC</strong> — allows contract to transfer from your wallet</li>
+              <li>Click <strong>Run Payroll</strong> — sends USDC to all selected employees</li>
+            </ol>
+
+            <div class="callout success">
+              <span class="callout-icon">✅</span>
+              <span>After the transaction confirms, USDC will appear in each employee's wallet immediately. Check <strong>History</strong> to see the on-chain record.</span>
+            </div>
+
+            <div class="pagination">
+              <a class="page-link" onclick="showSection('intro', null)">← Introduction</a>
+              <a class="page-link" onclick="showSection('employees', null)">Managing Employees →</a>
+            </div>
+          </div>
+
+          <!-- ── Managing Employees ── -->
+          <div class="section" id="sec-employees">
+            <h1>Managing Employees</h1>
+            <p class="page-desc">Register, update, and manage your employee roster on-chain.</p>
+
+            <h2>Employee Data Structure</h2>
+            <p>Each employee record stored on-chain contains:</p>
+            <table>
+              <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+              <tr><td><code>wallet</code></td><td>address</td><td>Employee's wallet address — USDC is sent here</td></tr>
+              <tr><td><code>salaryNet</code></td><td>uint256</td><td>Net monthly salary in USDC (6 decimals)</td></tr>
+              <tr><td><code>name</code></td><td>string</td><td>Encoded as <code>"Name||Position||NIK"</code></td></tr>
+              <tr><td><code>active</code></td><td>bool</td><td>Whether employee receives salary in next payroll</td></tr>
+            </table>
+
+            <div class="callout tip">
+              <span class="callout-icon">💡</span>
+              <span>The <code>name</code> field encodes three values: <code>"Full Name||Position||NIK"</code>. This allows storing rich employee data in a single on-chain string field.</span>
+            </div>
+
+            <h2>Adding an Employee</h2>
+            <div class="steps">
+              <div class="step">
+                <div class="step-num">1</div>
+                <div class="step-body"><h3>Open Employees page</h3><p>Navigate to Employees from the sidebar.</p></div>
+              </div>
+              <div class="step">
+                <div class="step-num">2</div>
+                <div class="step-body"><h3>Click Add Employee</h3><p>Fill the form: Name, Position, NIK, Wallet Address, Net Salary.</p></div>
+              </div>
+              <div class="step">
+                <div class="step-num">3</div>
+                <div class="step-body"><h3>Confirm on MetaMask</h3><p>Transaction calls <code>registerEmployee()</code> on the smart contract.</p></div>
+              </div>
+            </div>
+
+            <h2>Editing an Employee</h2>
+            <p>Tap the <strong>edit icon</strong> on an employee card. Update any field and confirm. Calls <code>updateEmployee()</code> on-chain.</p>
+
+            <h2>Removing an Employee</h2>
+            <p>Tap the <strong>trash icon</strong> and confirm. Calls <code>removeEmployee()</code> — uses swap-and-pop for gas efficiency.</p>
+
+            <div class="callout warning">
+              <span class="callout-icon">⚠️</span>
+              <span>Removing an employee is <strong>irreversible</strong>. Their history in payroll runs is still recorded in the on-chain PayrollRun records, but their employee record is deleted.</span>
+            </div>
+
+            <h2>Active vs Inactive</h2>
+            <p>Toggle the <strong>active</strong> flag to include/exclude an employee from the next payroll without deleting their record. Inactive employees are skipped during <code>runPayrollSelected()</code>.</p>
+
+            <div class="pagination">
+              <a class="page-link" onclick="showSection('quickstart', null)">← Quick Start</a>
+              <a class="page-link" onclick="showSection('attendance', null)">Attendance System →</a>
+            </div>
+          </div>
+
+          <!-- ── Attendance ── -->
+          <div class="section" id="sec-attendance">
+            <h1>Attendance System</h1>
+            <p class="page-desc">Record monthly attendance to calculate proportional salaries.</p>
+
+            <div class="callout info">
+              <span class="callout-icon">ℹ️</span>
+              <span>Attendance is optional. If no attendance data is recorded for an employee, they receive their <strong>full net salary</strong> (safe default).</span>
+            </div>
+
+            <h2>Attendance Status Codes</h2>
+            <table>
+              <tr><th>Code</th><th>Status</th><th>Counts for Salary?</th></tr>
+              <tr><td><span class="badge blue">0</span></td><td>Not yet recorded</td><td>Yes (full salary default)</td></tr>
+              <tr><td><span class="badge green">1</span></td><td>Hadir (Present)</td><td>Yes</td></tr>
+              <tr><td><span class="badge yellow">2</span></td><td>Cuti (Paid Leave)</td><td>Yes</td></tr>
+              <tr><td><span class="badge yellow">3</span></td><td>Izin (Excused)</td><td>Yes</td></tr>
+              <tr><td><span class="badge red">4</span></td><td>Tidak Masuk (Absent)</td><td>No</td></tr>
+            </table>
+
+            <h2>Proportional Salary Formula</h2>
+            <p>When attendance is recorded, salary is calculated as:</p>
+            <pre><code>effectiveSalary = (Hadir + Cuti + Izin) / workingDays × salaryNet</code></pre>
+            <p>Default working days: <strong>26 days/month</strong> (configurable per company via <code>setWorkingDays()</code>).</p>
+
+            <h3>Example</h3>
+            <table>
+              <tr><th>Employee</th><th>Present</th><th>Leave</th><th>Absent</th><th>Net Salary</th><th>Effective Salary</th></tr>
+              <tr><td>Budi</td><td>20</td><td>3</td><td>3</td><td>1,000 USDC</td><td>(20+3)/26 × 1000 = <strong>884.6 USDC</strong></td></tr>
+              <tr><td>Sari</td><td>26</td><td>0</td><td>0</td><td>800 USDC</td><td>26/26 × 800 = <strong>800 USDC</strong></td></tr>
+            </table>
+
+            <h2>Recording Attendance</h2>
+            <p>Go to <strong>Attendance</strong> → select the month → set status for each employee per day or bulk-set monthly totals. Confirm the transaction on MetaMask.</p>
+
+            <div class="pagination">
+              <a class="page-link" onclick="showSection('employees', null)">← Managing Employees</a>
+              <a class="page-link" onclick="showSection('payroll', null)">Running Payroll →</a>
+            </div>
+          </div>
+
+          <!-- ── Payroll ── -->
+          <div class="section" id="sec-payroll">
+            <h1>Running Payroll</h1>
+            <p class="page-desc">Distribute USDC salaries to selected employees in one transaction.</p>
+
+            <h2>Before You Start</h2>
+            <ul>
+              <li>Your wallet must have sufficient USDC balance</li>
+              <li>Employees must be registered and set to active</li>
+              <li>Connect wallet and be on Arc Testnet or Mainnet</li>
+            </ul>
+
+            <h2>Step 1 — Select Pay Period</h2>
+            <p>Use the month-year calendar picker to select the pay period (e.g. <strong>October 2026</strong>). This label is recorded permanently on-chain as reference for the payroll run. It does <em>not</em> affect the transfer amount.</p>
+
+            <h2>Step 2 — Select Employees</h2>
+            <p>Check/uncheck individual employees to include in this payroll run. The total USDC required updates in real-time as you select/deselect. Maximum 50 employees per batch.</p>
+
+            <div class="callout tip">
+              <span class="callout-icon">💡</span>
+              <span>You can run payroll for a subset of employees — useful when paying different teams at different times.</span>
+            </div>
+
+            <h2>Step 3 — Approve USDC</h2>
+            <p>Click <strong>Approve USDC</strong>. This calls <code>USDC.approve(contractAddress, totalAmount)</code> — it authorizes the InstoPay contract to transfer exactly that amount from your wallet.</p>
+
+            <div class="callout warning">
+              <span class="callout-icon">⚠️</span>
+              <span>Approval must be done before every payroll run, or when adding more employees. The allowance equals the exact total of selected employees' salaries.</span>
+            </div>
+
+            <h2>Step 4 — Execute Payroll</h2>
+            <p>Click <strong>Run Payroll</strong>. The contract calls <code>runPayrollSelected(period, wallets[])</code> which transfers USDC directly to each selected employee's wallet.</p>
+
+            <h3>What happens on-chain:</h3>
+            <ol>
+              <li>Contract receives the payroll call from your wallet</li>
+              <li>For each selected wallet: <code>safeTransferFrom(you → employee, salary)</code></li>
+              <li>If a transfer fails (e.g. blocklisted address), it emits <code>SalaryFailed</code> and continues — other employees are not affected</li>
+              <li>A <code>PayrollRun</code> record is stored with runId, period, total, count, timestamp</li>
+              <li><code>PayrollRun</code> event emitted on-chain</li>
+            </ol>
+
+            <div class="pagination">
+              <a class="page-link" onclick="showSection('attendance', null)">← Attendance System</a>
+              <a class="page-link" onclick="showSection('history', null)">Payroll History →</a>
+            </div>
+          </div>
+
+          <!-- ── History ── -->
+          <div class="section" id="sec-history">
+            <h1>Payroll History</h1>
+            <p class="page-desc">Every payroll run is permanently recorded on the blockchain.</p>
+
+            <h2>PayrollRun Record Structure</h2>
+            <table>
+              <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+              <tr><td><code>runId</code></td><td>uint256</td><td>Auto-incrementing run ID per company</td></tr>
+              <tr><td><code>period</code></td><td>string</td><td>Pay period label, e.g. "October 2026"</td></tr>
+              <tr><td><code>totalAmount</code></td><td>uint256</td><td>Total USDC transferred (successful transfers only)</td></tr>
+              <tr><td><code>employeeCount</code></td><td>uint256</td><td>Number of employees successfully paid</td></tr>
+              <tr><td><code>timestamp</code></td><td>uint256</td><td>Unix timestamp of the payroll execution</td></tr>
+              <tr><td><code>status</code></td><td>enum</td><td>Always <span class="badge green">Completed</span></td></tr>
+            </table>
+
+            <div class="callout info">
+              <span class="callout-icon">ℹ️</span>
+              <span>History is wallet-scoped. You only see payroll runs from your connected wallet. Other companies' data is not visible.</span>
+            </div>
+
+            <h2>Viewing History</h2>
+            <p>Navigate to <strong>History</strong> in the sidebar. Each card shows the period, date, total USDC, employee count, and run number. Click <strong>ArcScan</strong> to view the transaction on the blockchain explorer.</p>
+
+            <div class="pagination">
+              <a class="page-link" onclick="showSection('payroll', null)">← Running Payroll</a>
+              <a class="page-link" onclick="showSection('contracts', null)">Smart Contracts →</a>
+            </div>
+          </div>
+
+          <!-- ── Contracts ── -->
+          <div class="section" id="sec-contracts">
+            <h1>Smart Contracts</h1>
+            <p class="page-desc">InstoPay contract addresses and function reference.</p>
+
+            <h2>Deployed Addresses</h2>
+            <table>
+              <tr><th>Contract</th><th>Network</th><th>Address</th></tr>
+              <tr>
+                <td><strong>PayrollOS</strong></td>
+                <td><span class="badge blue">Arc Testnet</span></td>
+                <td><a href="https://explorer.testnet.arc.io/address/0xbf5888844ed7d8e2feb57cc1d405bd1cad8f85f6" target="_blank" class="addr">0xbf5888844ed7d8e2feb57cc1d405bd1cad8f85f6</a></td>
+              </tr>
+              <tr>
+                <td><strong>PayrollOS</strong></td>
+                <td><span class="badge green">Arc Mainnet</span></td>
+                <td><a href="https://explorer.arc.io/address/0x583F852E3D8017BaA214c9eeDCedD86c3825c57C" target="_blank" class="addr">0x583F852E3D8017BaA214c9eeDCedD86c3825c57C</a></td>
+              </tr>
+              <tr>
+                <td><strong>AttendanceOS</strong></td>
+                <td><span class="badge blue">Arc Testnet</span></td>
+                <td><a href="https://explorer.testnet.arc.io/address/0x6c020b13c311da70558a417d4c8d3b1e343268b6" target="_blank" class="addr">0x6c020b13c311da70558a417d4c8d3b1e343268b6</a></td>
+              </tr>
+              <tr>
+                <td><strong>AttendanceOS</strong></td>
+                <td><span class="badge green">Arc Mainnet</span></td>
+                <td><a href="https://explorer.arc.io/address/0x6A38F938cBEeC1db69B0D20D22D6831D0fB01c3E" target="_blank" class="addr">0x6A38F938cBEeC1db69B0D20D22D6831D0fB01c3E</a></td>
+              </tr>
+              <tr>
+                <td><strong>USDC</strong></td>
+                <td><span class="badge blue">Arc Testnet</span></td>
+                <td><code class="addr">0x3600000000000000000000000000000000000000</code></td>
+              </tr>
+            </table>
+
+            <h2>Key Functions</h2>
+            <h3>Write Functions (require wallet signature)</h3>
+            <table>
+              <tr><th>Function</th><th>Description</th></tr>
+              <tr><td><code>registerEmployee(wallet, salary, name, active)</code></td><td>Add new employee to your company</td></tr>
+              <tr><td><code>updateEmployee(wallet, salary, name, active)</code></td><td>Update existing employee data</td></tr>
+              <tr><td><code>removeEmployee(wallet)</code></td><td>Remove employee from roster</td></tr>
+              <tr><td><code>runPayrollSelected(period, wallets[])</code></td><td>Pay selected employees</td></tr>
+            </table>
+
+            <h3>Read Functions (free, no gas)</h3>
+            <table>
+              <tr><th>Function</th><th>Returns</th></tr>
+              <tr><td><code>getEmployees(company)</code></td><td>All employees for a company</td></tr>
+              <tr><td><code>getPayrollRun(company, runId)</code></td><td>Specific payroll run data</td></tr>
+              <tr><td><code>getRunCount(company)</code></td><td>Total payroll runs</td></tr>
+              <tr><td><code>getTotalDisbursed(company)</code></td><td>Cumulative USDC paid</td></tr>
+              <tr><td><code>getActiveEmployeeCount(company)</code></td><td>Active employee count</td></tr>
+            </table>
+
+            <div class="pagination">
+              <a class="page-link" onclick="showSection('history', null)">← Payroll History</a>
+              <a class="page-link" onclick="showSection('settings', null)">Settings & Network →</a>
+            </div>
+          </div>
+
+          <!-- ── Settings ── -->
+          <div class="section" id="sec-settings">
+            <h1>Settings &amp; Network</h1>
+            <p class="page-desc">Configure your network and view wallet information.</p>
+
+            <h2>Supported Networks</h2>
+            <table>
+              <tr><th>Network</th><th>Chain ID</th><th>Use Case</th></tr>
+              <tr><td><span class="badge blue">Arc Testnet</span></td><td><code>5042002</code></td><td>Development &amp; testing — use free testnet USDC</td></tr>
+              <tr><td><span class="badge green">Arc Mainnet</span></td><td><code>5042</code></td><td>Production — real USDC, real payments</td></tr>
+            </table>
+
+            <h2>Switching Networks</h2>
+            <p>Go to <strong>Settings</strong> → click <strong>Switch to Mainnet</strong> or <strong>Switch to Testnet</strong>. InstoPay automatically uses the correct contract address for each network.</p>
+
+            <div class="callout warning">
+              <span class="callout-icon">⚠️</span>
+              <span><strong>Mainnet uses real USDC.</strong> Transactions cannot be reversed. Always test on Testnet first.</span>
+            </div>
+
+            <h2>Getting Testnet USDC</h2>
+            <p>Click <strong>Get test USDC</strong> in the Arc Studio sidebar to receive free testnet USDC instantly. No faucet website needed.</p>
+
+            <h2>Wallet Information</h2>
+            <p>The Settings page shows your connected wallet address, USDC balance, current chain, total disbursed, and active employee count — all read live from the blockchain.</p>
+
+            <div class="pagination">
+              <a class="page-link" onclick="showSection('contracts', null)">← Smart Contracts</a>
+              <a class="page-link" onclick="showSection('faq', null)">FAQ →</a>
+            </div>
+          </div>
+
+          <!-- ── FAQ ── -->
+          <div class="section" id="sec-faq">
+            <h1>FAQ</h1>
+            <p class="page-desc">Common questions about InstoPay.</p>
+
+            <h3>Can multiple people use InstoPay?</h3>
+            <p>Yes. InstoPay is fully multi-tenant. Every wallet address is an independent company. Your employee data is completely isolated from other users — they cannot see or modify your payroll data.</p>
+
+            <hr />
+
+            <h3>What happens if a salary transfer fails?</h3>
+            <p>If one employee's transfer fails (e.g. the address is blocklisted), InstoPay emits a <code>SalaryFailed</code> event and continues paying the other employees. The payroll run still succeeds — only that one employee is skipped.</p>
+
+            <hr />
+
+            <h3>Does InstoPay charge any fees?</h3>
+            <p>No. InstoPay never takes a fee or percentage from your payroll. 100% of the approved USDC goes directly to employee wallets. You only pay the Arc network gas fee (paid in USDC, very small).</p>
+
+            <hr />
+
+            <h3>Can I recover an employee I deleted?</h3>
+            <p>No. <code>removeEmployee()</code> is irreversible on-chain. Their historical payroll runs are still recorded, but their employee record is deleted. Re-add them as a new employee if needed.</p>
+
+            <hr />
+
+            <h3>Is employee data private?</h3>
+            <p>Employee names, wallet addresses, and salaries are stored on a public blockchain. Anyone with the contract address can technically read the raw storage data. Do not store sensitive personal information beyond what is needed.</p>
+
+            <hr />
+
+            <h3>How do I move from Testnet to Mainnet?</h3>
+            <ol>
+              <li>Test thoroughly on Arc Testnet with testnet USDC</li>
+              <li>Go to Settings → Switch to Mainnet</li>
+              <li>Re-register your employees (Mainnet has a separate contract)</li>
+              <li>Ensure you have real USDC on Arc Mainnet</li>
+              <li>Run payroll — transactions are real and irreversible</li>
+            </ol>
+
+            <div class="callout success">
+              <span class="callout-icon">✅</span>
+              <span>Need help? Open a GitHub issue at <a href="https://github.com/hafizhzikri/instopay" target="_blank">github.com/hafizhzikri/instopay</a></span>
+            </div>
+
+            <div class="pagination">
+              <a class="page-link" onclick="showSection('settings', null)">← Settings & Network</a>
+              <span class="page-link hidden">→</span>
+            </div>
+          </div>
+
+        </div><!-- /content -->
+      </main>
+    </div><!-- /layout -->
+
+    <script>
+      const SECTIONS = {
+        intro: 'Introduction',
+        quickstart: 'Quick Start',
+        employees: 'Managing Employees',
+        attendance: 'Attendance System',
+        payroll: 'Running Payroll',
+        history: 'Payroll History',
+        contracts: 'Smart Contracts',
+        settings: 'Settings & Network',
+        faq: 'FAQ',
+      };
+
+      function showSection(id, clickedEl) {
+        // Hide all sections
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        // Show target
+        const target = document.getElementById('sec-' + id);
+        if (target) target.classList.add('active');
+
+        // Update nav active state
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        if (clickedEl) {
+          clickedEl.classList.add('active');
+        } else {
+          // Find by onclick content
+          document.querySelectorAll('.nav-item').forEach(el => {
+            if (el.getAttribute('onclick') && el.getAttribute('onclick').includes("'" + id + "'")) {
+              el.classList.add('active');
+            }
+          });
+        }
+
+        // Update breadcrumb
+        const bc = document.getElementById('breadcrumb-current');
+        if (bc) bc.textContent = SECTIONS[id] || id;
+
+        // Update mobile select
+        const sel = document.querySelector('.mobile-select');
+        if (sel) sel.value = id;
+
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      function showSectionById(id) {
+        showSection(id, null);
+      }
+    </script>
+  </body>
+</html>

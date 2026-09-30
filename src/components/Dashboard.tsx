@@ -75,6 +75,7 @@ export function Dashboard({ onNav }: Props) {
   const { address, isConnected } = useAccount();
   const { chainName } = useChain();
 
+
   const { employees, isLoading: empLoading, refetch: refetchEmpDash } = useEmployees(address);
   const { runCount, isLoading: runLoading } = useRunCount(address);
   const { totalDisbursedFormatted, isLoading: disbLoading } = useTotalDisbursed(address);
@@ -318,7 +319,7 @@ export function Dashboard({ onNav }: Props) {
         {/* Workflow steps */}
         <div className="px-4 pb-4" style={{ background: 'var(--surface)' }}>
           <p className="text-xs font-semibold uppercase mb-3"
-            style={{ color: 'var(--muted)', letterSpacing: '0.08em' }}>Alur Kerja</p>
+            style={{ color: 'var(--muted)', letterSpacing: '0.08em' }}>How It Works</p>
           <div className="space-y-2">
             {[
               { step: '01', label: 'Register employees', sub: 'Name, position, ID, wallet, salary' },
@@ -344,9 +345,20 @@ export function Dashboard({ onNav }: Props) {
         {/* Footer */}
         <div className="px-4 py-3 flex items-center justify-between"
           style={{ background: 'var(--canvas)', borderTop: '1px solid var(--border)' }}>
-          <div className="flex items-center gap-1.5">
-            <div className="size-2 rounded-full" style={{ background: 'var(--success)' }} />
-            <span className="text-xs" style={{ color: 'var(--muted)' }}>Powered by Arc · USDC</span>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
+              <div className="size-2 rounded-full" style={{ background: 'var(--success)' }} />
+              <span className="text-xs" style={{ color: 'var(--muted)' }}>Powered by Arc · USDC</span>
+            </div>
+            <a
+              href="/docs.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-lg transition-all active:scale-95"
+              style={{ background: 'var(--surface-muted)', color: 'var(--accent)', border: '1px solid var(--border)' }}
+            >
+              Docs
+            </a>
           </div>
           <button
             onClick={() => onNav('run-payroll')}
@@ -357,6 +369,8 @@ export function Dashboard({ onNav }: Props) {
           </button>
         </div>
       </motion.div>
+
+
     </div>
   );
 }

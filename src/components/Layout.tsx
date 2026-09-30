@@ -7,11 +7,11 @@ import {
   Settings,
   Menu,
   X,
-  BriefcaseBusiness,
   CalendarDays,
 } from 'lucide-react';
 import { useState } from 'react';
 import { ConnectKitButton } from 'connectkit';
+import { InstopayLogo } from './InstopayLogo';
 import { useAccount, useSwitchChain } from 'wagmi';
 import type { View } from '../types';
 import { useChain } from '../hooks/useChain';
@@ -53,11 +53,8 @@ export function Layout({ view, onNav, children }: LayoutProps) {
       >
         {/* Logo */}
         <div className="flex items-center gap-3 px-2 pb-2">
-          <div
-            className="size-9 rounded-xl flex items-center justify-center"
-            style={{ background: 'rgba(255,255,255,0.18)' }}
-          >
-            <BriefcaseBusiness className="size-5 text-white" />
+          <div className="shrink-0">
+            <InstopayLogo size={48} />
           </div>
           <div>
             <p className="text-white font-bold text-base leading-none display">InstoPay</p>
@@ -121,11 +118,8 @@ export function Layout({ view, onNav, children }: LayoutProps) {
           style={{ background: 'var(--header-bg)', borderBottom: '1px solid var(--border)', backdropFilter: 'blur(12px)' }}
         >
           <div className="flex items-center gap-2">
-            <div
-              className="size-8 rounded-xl flex items-center justify-center"
-              style={{ background: 'var(--accent)' }}
-            >
-              <BriefcaseBusiness className="size-4 text-white" />
+            <div className="shrink-0">
+              <InstopayLogo size={36} />
             </div>
             <span className="font-bold text-sm display" style={{ color: 'var(--ink)' }}>InstoPay</span>
           </div>
@@ -171,8 +165,8 @@ export function Layout({ view, onNav, children }: LayoutProps) {
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div className="size-8 rounded-xl flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.18)' }}>
-                      <BriefcaseBusiness className="size-4 text-white" />
+                    <div className="shrink-0">
+                      <InstopayLogo size={36} />
                     </div>
                     <div>
                       <p className="text-white font-bold text-sm display">InstoPay</p>
