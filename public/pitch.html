@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>InstoPay — Pitch Deck</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f0f4ff; color: #1a2340; }
+
+    /* Header */
+    .hero {
+      background: linear-gradient(135deg, #1a3a8f 0%, #2563eb 50%, #38bdf8 100%);
+      color: white; padding: 60px 40px; text-align: center; position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute; top: -80px; right: -80px;
+      width: 300px; height: 300px; border-radius: 50%;
+      background: rgba(255,255,255,0.07);
+    }
+    .hero-badge {
+      display: inline-block; background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.3); border-radius: 20px;
+      padding: 6px 16px; font-size: 13px; margin-bottom: 20px; letter-spacing: 1px;
+    }
+    .hero h1 { font-size: 48px; font-weight: 800; margin-bottom: 8px; }
+    .hero h1 span { color: #7dd3fc; }
+    .hero-sub { font-size: 18px; opacity: 0.85; margin-bottom: 24px; }
+    .hero-meta { font-size: 14px; opacity: 0.7; }
+    .hero-links { margin-top: 24px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 600;
+      text-decoration: none; cursor: pointer; border: none; transition: all 0.2s;
+    }
+    .btn-white { background: white; color: #1a3a8f; }
+    .btn-white:hover { background: #e0eaff; }
+    .btn-outline { background: transparent; color: white; border: 1px solid rgba(255,255,255,0.4); }
+    .btn-outline:hover { background: rgba(255,255,255,0.1); }
+
+    /* Nav */
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      background: white; border-bottom: 1px solid #e2e8f0;
+      display: flex; gap: 4px; padding: 0 24px; overflow-x: auto;
+    }
+    .nav a {
+      text-decoration: none; color: #64748b; font-size: 14px; font-weight: 500;
+      padding: 14px 16px; white-space: nowrap; border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .nav a:hover, .nav a.active { color: #2563eb; border-bottom-color: #2563eb; }
+
+    /* Layout */
+    .container { max-width: 900px; margin: 0 auto; padding: 48px 24px; }
+    .section { margin-bottom: 64px; }
+    .section-label {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: #dbeafe; color: #1d4ed8; border-radius: 6px;
+      padding: 4px 12px; font-size: 12px; font-weight: 700;
+      letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px;
+    }
+    .section h2 { font-size: 28px; font-weight: 800; color: #0f172a; margin-bottom: 8px; }
+    .section p { font-size: 16px; line-height: 1.7; color: #475569; margin-bottom: 16px; }
+    .section h3 { font-size: 18px; font-weight: 700; color: #1e293b; margin: 24px 0 12px; }
+
+    /* Cards */
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 24px 0; }
+    .card {
+      background: white; border-radius: 12px; padding: 20px;
+      border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .card-icon { font-size: 28px; margin-bottom: 10px; }
+    .card h4 { font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 6px; }
+    .card p { font-size: 13px; color: #64748b; line-height: 1.5; }
+
+    /* Table */
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+    th { background: #1e3a8a; color: white; padding: 12px 16px; text-align: left; font-size: 13px; font-weight: 600; }
+    td { padding: 12px 16px; font-size: 14px; border-bottom: 1px solid #f1f5f9; color: #334155; }
+    tr:last-child td { border-bottom: none; }
+    tr:nth-child(even) td { background: #f8fafc; }
+    .green { color: #16a34a; font-weight: 600; }
+    .red { color: #dc2626; }
+
+    /* Quote */
+    .quote {
+      background: linear-gradient(135deg, #eff6ff, #dbeafe);
+      border-left: 4px solid #2563eb; border-radius: 0 12px 12px 0;
+      padding: 20px 24px; margin: 24px 0; font-size: 16px;
+      font-style: italic; color: #1e3a8a; font-weight: 500;
+    }
+
+    /* Code block */
+    pre {
+      background: #0f172a; color: #e2e8f0; border-radius: 10px;
+      padding: 20px; font-size: 13px; overflow-x: auto;
+      margin: 16px 0; line-height: 1.6;
+    }
+    code { font-family: 'Courier New', monospace; }
+
+    /* Steps */
+    .steps { margin: 24px 0; }
+    .step {
+      display: flex; gap: 16px; margin-bottom: 20px; align-items: flex-start;
+    }
+    .step-num {
+      min-width: 36px; height: 36px; border-radius: 50%;
+      background: #2563eb; color: white; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; flex-shrink: 0;
+    }
+    .step-content h4 { font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
+    .step-content p { font-size: 14px; color: #64748b; line-height: 1.5; }
+
+    /* Roadmap */
+    .roadmap { display: flex; flex-direction: column; gap: 0; margin: 24px 0; }
+    .road-item {
+      display: flex; gap: 20px; padding: 20px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .road-item:last-child { border-bottom: none; }
+    .road-badge {
+      min-width: 80px; height: 28px; border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; flex-shrink: 0; margin-top: 2px;
+    }
+    .road-now { background: #dcfce7; color: #16a34a; }
+    .road-q1 { background: #dbeafe; color: #1d4ed8; }
+    .road-2027 { background: #f3e8ff; color: #7c3aed; }
+    .road-content h4 { font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 6px; }
+    .road-content ul { padding-left: 18px; }
+    .road-content li { font-size: 14px; color: #64748b; margin-bottom: 4px; }
+
+    /* Stats */
+    .stat-row { display: flex; flex-wrap: wrap; gap: 16px; margin: 24px 0; }
+    .stat {
+      background: white; border-radius: 12px; padding: 20px 24px;
+      border: 1px solid #e2e8f0; flex: 1; min-width: 150px; text-align: center;
+    }
+    .stat-num { font-size: 32px; font-weight: 800; color: #2563eb; }
+    .stat-label { font-size: 13px; color: #64748b; margin-top: 4px; }
+
+    /* Address */
+    .addr {
+      background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;
+      padding: 12px 16px; font-family: monospace; font-size: 13px; color: #334155;
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      margin: 8px 0;
+    }
+    .addr-label { font-family: sans-serif; font-size: 12px; color: #64748b; font-weight: 600; }
+
+    /* Footer */
+    footer {
+      background: #0f172a; color: #94a3b8; text-align: center;
+      padding: 40px 24px; font-size: 14px;
+    }
+    footer strong { color: white; }
+    footer a { color: #60a5fa; text-decoration: none; }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 32px; }
+      .hero { padding: 40px 20px; }
+      .container { padding: 32px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">Circle × Arc Studio Meeting Presentation</div>
+  <h1>Insto<span>Pay</span></h1>
+  <p class="hero-sub">Onchain Payroll Infrastructure — Built on Arc, Powered by USDC</p>
+  <p class="hero-meta">Transparent · Instant · Non-Custodial · Global</p>
+  <div class="hero-links">
+    <a class="btn btn-white" href="https://instopayapp.vercel.app" target="_blank">🚀 Live Demo</a>
+    <a class="btn btn-outline" href="https://github.com/Hafizhzikri/InstoPay" target="_blank">📦 GitHub</a>
+    <a class="btn btn-outline" href="/demo.html" target="_blank">📋 Demo Script</a>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="#problem">Problem</a>
+  <a href="#solution">Solution</a>
+  <a href="#why-arc">Why Arc</a>
+  <a href="#architecture">Architecture</a>
+  <a href="#market">Market</a>
+  <a href="#traction">Traction</a>
+  <a href="#roadmap">Roadmap</a>
+  <a href="#ask">Ask</a>
+</nav>
+
+<div class="container">
+
+  <!-- PROBLEM -->
+  <div class="section" id="problem">
+    <div class="section-label">01 · The Problem</div>
+    <h2>Payroll is Broken</h2>
+    <p>Every month, millions of companies run payroll through banks with 2–5 day settlement delays, intermediaries that charge 1–3% fees, and opaque systems with no verifiable audit trail.</p>
+    <div class="quote">
+      "Why is paying someone still a 3-day process in 2026? Banks haven't solved this in 50 years."
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon">⏳</div>
+        <h4>2–5 Day Settlement</h4>
+        <p>Employees wait days after payday to actually receive their money.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">💸</div>
+        <h4>1–3% Fees</h4>
+        <p>For a $1M payroll, that's $10,000–$30,000 in fees per month — just to move money.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🌍</div>
+        <h4>Cross-border Hell</h4>
+        <p>International wire transfers cost $25–50 each and take 3–7 business days.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔒</div>
+        <h4>No Audit Trail</h4>
+        <p>Payroll records live in private databases. No employee can independently verify their payment history.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="section" id="solution">
+    <div class="section-label">02 · The Solution</div>
+    <h2>InstoPay — Payroll on the Blockchain</h2>
+    <p>InstoPay lets any company register employees and pay their salaries directly to employee wallets in a single blockchain transaction. No banks. No intermediaries. No delays.</p>
+
+    <table>
+      <tr>
+        <th>Metric</th>
+        <th>Traditional Payroll</th>
+        <th>InstoPay</th>
+      </tr>
+      <tr>
+        <td>Settlement time</td>
+        <td class="red">2–5 business days</td>
+        <td class="green">✅ &lt; 3 seconds</td>
+      </tr>
+      <tr>
+        <td>Transaction fee</td>
+        <td class="red">1–3% of payroll</td>
+        <td class="green">✅ ~$0.001 (Arc gas)</td>
+      </tr>
+      <tr>
+        <td>Audit trail</td>
+        <td class="red">Private database</td>
+        <td class="green">✅ Public blockchain</td>
+      </tr>
+      <tr>
+        <td>Intermediaries</td>
+        <td class="red">3–5 parties</td>
+        <td class="green">✅ Zero</td>
+      </tr>
+      <tr>
+        <td>Cross-border</td>
+        <td class="red">Complex + expensive</td>
+        <td class="green">✅ Same as domestic</td>
+      </tr>
+      <tr>
+        <td>Fund custody</td>
+        <td class="red">Bank holds funds</td>
+        <td class="green">✅ Employer wallet only</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- WHY ARC -->
+  <div class="section" id="why-arc">
+    <div class="section-label">03 · Why Arc + USDC</div>
+    <h2>The Only Stack That Makes This Work</h2>
+
+    <h3>Why USDC?</h3>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon">📊</div>
+        <h4>Stable Value</h4>
+        <p>Employees receive exactly what they're owed. Zero volatility risk.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🌐</div>
+        <h4>Global</h4>
+        <p>Same USDC works in Jakarta, Lagos, São Paulo, New York.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🏦</div>
+        <h4>Circle-Issued</h4>
+        <p>Regulated, audited, redeemable 1:1 with USD. Enterprise-grade trust.</p>
+      </div>
+    </div>
+
+    <h3>Why Arc?</h3>
+    <p>Arc is the only blockchain where <strong>USDC is the native gas token</strong>. This has two major implications for payroll:</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h4>Predictable Costs</h4>
+          <p>Employers pay gas in USDC — the same currency as salaries. No need to hold ETH or any volatile token just to run payroll.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h4>Sub-second Finality</h4>
+          <p>Arc's fast finality means salary confirmation in &lt; 1 second, not 12+ seconds on Ethereum mainnet.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h4>Stable Fees</h4>
+          <p>Arc's fee model is predictable, making payroll cost forecasting straightforward for finance teams.</p>
+        </div>
+      </div>
+    </div>
+    <div class="quote">
+      "For a payroll system, predictability of cost and time is everything. Arc + USDC is the only combination that gives us both."
+    </div>
+  </div>
+
+  <!-- ARCHITECTURE -->
+  <div class="section" id="architecture">
+    <div class="section-label">04 · Architecture</div>
+    <h2>Multi-Tenant Smart Contract</h2>
+    <p>The <code>PayrollOS</code> contract on Arc is fully multi-tenant: any wallet that connects becomes its own isolated company. There is no global admin. The contract is a public utility.</p>
+    <pre><code>// Core payroll flow
+registerEmployee(wallet, salaryNet, name, active)
+  → stored in mapping[msg.sender][wallet]
+
+runPayrollSelected(period, wallets[])
+  → USDC.transferFrom(employer, employee.wallet, salary)
+  → emits SalaryPaid(runId, wallet, amount) per employee
+  → stores PayrollRunData permanently on-chain</code></pre>
+
+    <h3>Security Properties</h3>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon">🛡️</div>
+        <h4>ReentrancyGuard</h4>
+        <p>All fund-moving functions protected against reentrancy attacks.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔄</div>
+        <h4>Per-transfer try/catch</h4>
+        <p>One failed payment never blocks others. Partial batches always succeed.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">⚡</div>
+        <h4>Batch Cap (50)</h4>
+        <p>Max 50 employees per transaction — protects against gas limit issues.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🏦</div>
+        <h4>Zero Custody</h4>
+        <p>Contract never holds USDC. Funds flow directly employer → employee.</p>
+      </div>
+    </div>
+
+    <h3>Deployed Contracts</h3>
+    <div class="addr">
+      <div>
+        <div class="addr-label">Arc Testnet — PayrollOS</div>
+        0xbf5888844ed7d8e2feb57cc1d405bd1cad8f85f6
+      </div>
+    </div>
+    <div class="addr">
+      <div>
+        <div class="addr-label">Arc Mainnet — PayrollOS</div>
+        0x583F852E0b2Bb39B2A879E0B2CdEb1bAbC5Cbe4
+      </div>
+    </div>
+  </div>
+
+  <!-- MARKET -->
+  <div class="section" id="market">
+    <div class="section-label">05 · Market</div>
+    <h2>Market Opportunity</h2>
+    <div class="stat-row">
+      <div class="stat">
+        <div class="stat-num">560M</div>
+        <div class="stat-label">SMEs globally (IFC)</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">$25–50</div>
+        <div class="stat-label">Cost per international wire</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">3%</div>
+        <div class="stat-label">Average payroll processing fee</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">5 days</div>
+        <div class="stat-label">Traditional settlement time</div>
+      </div>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon">🏢</div>
+        <h4>SMEs in Emerging Markets</h4>
+        <p>560M SMEs globally. Most lack affordable cross-border payment rails. Southeast Asia, Africa, LatAm are highest growth.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">💻</div>
+        <h4>Remote-First Companies</h4>
+        <p>Distributed teams across multiple countries. Traditional payroll requires separate bank accounts per country.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">⚡</div>
+        <h4>DAOs & Web3 Orgs</h4>
+        <p>Already use USDC for treasury. Need structured, auditable payroll. InstoPay is the natural fit.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRACTION -->
+  <div class="section" id="traction">
+    <div class="section-label">06 · Traction</div>
+    <h2>Built with Arc Studio</h2>
+    <p>Entire product built using Arc Studio in a single session — from idea to live production-grade infrastructure.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">✅</div>
+        <div class="step-content">
+          <h4>Multi-tenant smart contract deployed on Arc Testnet + Mainnet</h4>
+          <p>PayrollOS + AttendanceOS contracts, security reviewed, live on both networks.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">✅</div>
+        <div class="step-content">
+          <h4>Full frontend — employee management, payroll execution, history</h4>
+          <p>React + wagmi + ConnectKit. Mobile-first responsive design.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">✅</div>
+        <div class="step-content">
+          <h4>Live at instopayapp.vercel.app</h4>
+          <p>Accessible to anyone, works on Arc Testnet and Mainnet.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">✅</div>
+        <div class="step-content">
+          <h4>Open source: github.com/Hafizhzikri/InstoPay</h4>
+          <p>Full codebase publicly available.</p>
+        </div>
+      </div>
+    </div>
+    <div class="quote">
+      "Arc Studio enabled: smart contract written, security reviewed, and deployed without manual Foundry setup. Full-stack onchain app from idea to live product in hours, not weeks."
+    </div>
+  </div>
+
+  <!-- ROADMAP -->
+  <div class="section" id="roadmap">
+    <div class="section-label">07 · Roadmap</div>
+    <h2>Where InstoPay Goes Next</h2>
+    <div class="roadmap">
+      <div class="road-item">
+        <div class="road-badge road-now">NOW</div>
+        <div class="road-content">
+          <h4>v1 — Core Payroll (Live)</h4>
+          <ul>
+            <li>Multi-tenant payroll contract on Arc Testnet + Mainnet</li>
+            <li>Employee registration with wallet + salary</li>
+            <li>Selective payroll execution with USDC</li>
+            <li>Attendance tracking module (AbsensiOS)</li>
+            <li>Permanent onchain payroll history</li>
+          </ul>
+        </div>
+      </div>
+      <div class="road-item">
+        <div class="road-badge road-q1">Q1 2027</div>
+        <div class="road-content">
+          <h4>v2 — Enterprise Features</h4>
+          <ul>
+            <li>Multi-signature payroll approval (CFO + HR must both sign)</li>
+            <li>Attendance-based auto salary calculation</li>
+            <li>Scheduled recurring payroll (Chainlink Automation)</li>
+            <li>Circle Developer-Controlled Wallets for non-crypto companies</li>
+            <li>Fiat onramp (Circle Onramp Kit)</li>
+          </ul>
+        </div>
+      </div>
+      <div class="road-item">
+        <div class="road-badge road-2027">2027</div>
+        <div class="road-content">
+          <h4>v3 — Global Scale</h4>
+          <ul>
+            <li>Cross-chain payroll via CCTP (Base, Arbitrum, Polygon)</li>
+            <li>Employee self-service portal</li>
+            <li>Circle Compliance API integration</li>
+            <li>White-label SDK for HR software companies</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="quote">
+      "InstoPay's ultimate vision: become the Stripe Payroll for Web3 — the default infrastructure layer for any company that wants to pay employees in USDC, globally, instantly."
+    </div>
+  </div>
+
+  <!-- ASK -->
+  <div class="section" id="ask">
+    <div class="section-label">08 · The Ask</div>
+    <h2>What We Need from Circle</h2>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon">🤝</div>
+        <h4>Technical Partnership</h4>
+        <p>Access to Circle's developer resources. Guidance on USDC/Payroll API integration. Connection to Circle's enterprise BD team.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📢</div>
+        <h4>Go-to-Market Support</h4>
+        <p>Feature in Circle's builder spotlight. Introduction to companies exploring USDC payroll. Arc ecosystem grant consideration.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">💡</div>
+        <h4>Product Feedback</h4>
+        <p>How can InstoPay better leverage Circle's product suite? Is there appetite for a Circle-backed payroll SDK?</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p style="font-size:20px; font-weight:800; color:white; margin-bottom:8px;">InstoPay</p>
+  <p style="margin-bottom:16px;">Onchain Payroll Infrastructure — Built on Arc, Powered by USDC</p>
+  <p>
+    <a href="https://instopayapp.vercel.app">🚀 Live Demo</a> &nbsp;·&nbsp;
+    <a href="https://github.com/Hafizhzikri/InstoPay">📦 GitHub</a> &nbsp;·&nbsp;
+    <a href="/demo.html">📋 Demo Script</a>
+  </p>
+  <p style="margin-top:20px; font-size:12px;">Built with Arc Studio by Circle &nbsp;·&nbsp; ezzasususgm@gmail.com</p>
+</footer>
+
+</body>
+</html>

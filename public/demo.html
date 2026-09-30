@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>InstoPay — Demo Script</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f0f4ff; color: #1a2340; }
+    .hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #1d4ed8 100%);
+      color: white; padding: 48px 40px; text-align: center;
+    }
+    .hero-badge {
+      display: inline-block; background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.25); border-radius: 20px;
+      padding: 5px 14px; font-size: 12px; margin-bottom: 16px; letter-spacing: 1px;
+    }
+    .hero h1 { font-size: 36px; font-weight: 800; margin-bottom: 8px; }
+    .hero h1 span { color: #7dd3fc; }
+    .hero p { font-size: 16px; opacity: 0.8; margin-bottom: 20px; }
+    .hero-links { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .btn { display: inline-block; padding: 9px 20px; border-radius: 7px; font-size: 13px; font-weight: 600; text-decoration: none; }
+    .btn-white { background: white; color: #1e3a8a; }
+    .btn-outline { background: transparent; color: white; border: 1px solid rgba(255,255,255,0.35); }
+
+    .container { max-width: 820px; margin: 0 auto; padding: 48px 24px; }
+    .section { margin-bottom: 48px; }
+    .section-label {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #dbeafe; color: #1d4ed8; border-radius: 6px;
+      padding: 4px 12px; font-size: 11px; font-weight: 700;
+      letter-spacing: 1px; text-transform: uppercase; margin-bottom: 14px;
+    }
+    h2 { font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 16px; }
+    h3 { font-size: 16px; font-weight: 700; color: #1e293b; margin: 20px 0 10px; }
+    p { font-size: 15px; line-height: 1.7; color: #475569; margin-bottom: 12px; }
+
+    .checklist { background: white; border-radius: 12px; padding: 20px 24px; border: 1px solid #e2e8f0; }
+    .check-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 0; border-bottom: 1px solid #f1f5f9;
+      font-size: 14px; color: #334155;
+    }
+    .check-item:last-child { border-bottom: none; }
+    .check-box {
+      width: 20px; height: 20px; border: 2px solid #2563eb;
+      border-radius: 5px; flex-shrink: 0; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+    }
+    .check-box.checked { background: #2563eb; }
+    .check-box.checked::after { content: '✓'; color: white; font-size: 12px; font-weight: 800; }
+
+    .scene {
+      background: white; border-radius: 14px; overflow: hidden;
+      border: 1px solid #e2e8f0; margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .scene-header {
+      display: flex; align-items: center; gap: 14px;
+      padding: 16px 20px; background: linear-gradient(90deg, #1e3a8a, #2563eb);
+      color: white;
+    }
+    .scene-num {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: rgba(255,255,255,0.2); display: flex;
+      align-items: center; justify-content: center;
+      font-weight: 800; font-size: 14px; flex-shrink: 0;
+    }
+    .scene-title { font-size: 15px; font-weight: 700; }
+    .scene-time { font-size: 12px; opacity: 0.75; margin-left: auto; }
+    .scene-body { padding: 20px; }
+    .scene-body p { font-size: 14px; }
+
+    .say-box {
+      background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px;
+      padding: 14px 16px; margin: 14px 0; font-style: italic;
+      font-size: 14px; color: #166534; line-height: 1.6;
+    }
+    .say-box::before { content: '💬 SAY: '; font-style: normal; font-weight: 700; }
+
+    .do-box {
+      background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px;
+      padding: 14px 16px; margin: 14px 0;
+      font-size: 14px; color: #1e40af; line-height: 1.6;
+    }
+    .do-box::before { content: '👆 DO: '; font-weight: 700; }
+
+    .point-box {
+      background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px;
+      padding: 14px 16px; margin: 14px 0;
+      font-size: 14px; color: #9a3412; line-height: 1.6;
+    }
+    .point-box::before { content: '👉 POINT TO: '; font-weight: 700; }
+
+    .qa-item {
+      background: white; border-radius: 10px; padding: 16px 20px;
+      border: 1px solid #e2e8f0; margin-bottom: 12px;
+    }
+    .qa-q { font-size: 14px; font-weight: 700; color: #1e3a8a; margin-bottom: 8px; }
+    .qa-q::before { content: '❓ '; }
+    .qa-a { font-size: 14px; color: #475569; line-height: 1.6; }
+
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+    th { background: #1e3a8a; color: white; padding: 10px 14px; text-align: left; font-size: 13px; }
+    td { padding: 10px 14px; font-size: 14px; border-bottom: 1px solid #f1f5f9; color: #334155; }
+    tr:last-child td { border-bottom: none; }
+
+    .highlight { color: #2563eb; font-weight: 700; }
+    .green { color: #16a34a; font-weight: 600; }
+
+    footer {
+      background: #0f172a; color: #94a3b8; text-align: center;
+      padding: 32px 24px; font-size: 13px; margin-top: 40px;
+    }
+    footer a { color: #60a5fa; text-decoration: none; }
+
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 26px; }
+      .hero { padding: 32px 16px; }
+      .container { padding: 24px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-badge">Circle Meeting — Demo Script</div>
+  <h1>Insto<span>Pay</span> Demo</h1>
+  <p>Step-by-step guide for the Circle meeting presentation</p>
+  <div class="hero-links">
+    <a class="btn btn-white" href="https://instopayapp.vercel.app" target="_blank">🚀 Open App</a>
+    <a class="btn btn-outline" href="/pitch.html" target="_blank">📊 Pitch Deck</a>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- CHECKLIST -->
+  <div class="section">
+    <div class="section-label">Before the Meeting</div>
+    <h2>Preparation Checklist</h2>
+    <div class="checklist" id="checklist">
+      <div class="check-item"><div class="check-box" onclick="toggle(this)"></div> Open instopayapp.vercel.app in Chrome</div>
+      <div class="check-item"><div class="check-box" onclick="toggle(this)"></div> MetaMask installed and unlocked</div>
+      <div class="check-item"><div class="check-box" onclick="toggle(this)"></div> MetaMask switched to Arc Testnet (ChainID: 5042002)</div>
+      <div class="check-item"><div class="check-box" onclick="toggle(this)"></div> At least 100 USDC in wallet (get from Arc Studio "Get test USDC")</div>
+      <div class="check-item"><div class="check-box" onclick="toggle(this)"></div> Pre-register 2–3 test employees with realistic names and salaries</div>
+      <div class="check-item"><div class="check-box" onclick="toggle(this)"></div> Arc Explorer open in another tab: explorer.testnet.arc.io</div>
+      <div class="check-item"><div class="check-box" onclick="toggle(this)"></div> GitHub repo open: github.com/Hafizhzikri/InstoPay</div>
+      <div class="check-item"><div class="check-box" onclick="toggle(this)"></div> Pitch deck open: /pitch.html</div>
+    </div>
+  </div>
+
+  <!-- SCENES -->
+  <div class="section">
+    <div class="section-label">Demo Flow — 4 Minutes</div>
+    <h2>Scene by Scene</h2>
+
+    <div class="scene">
+      <div class="scene-header">
+        <div class="scene-num">1</div>
+        <div class="scene-title">Opening — The Dashboard</div>
+        <div class="scene-time">30 sec</div>
+      </div>
+      <div class="scene-body">
+        <div class="say-box">
+          "InstoPay solves a simple but expensive problem: paying employees still takes 2–5 days and costs 1–3% in fees. We rebuilt payroll on Arc blockchain using USDC. Let me show you."
+        </div>
+        <div class="do-box">Navigate to instopayapp.vercel.app — wallet already connected</div>
+        <div class="point-box">Total Disbursed card, employee count, payroll run count — all reading live from blockchain</div>
+        <div class="say-box">
+          "Everything here is read directly from the smart contract on Arc — not from a database. Total USDC disbursed, employees registered, every payroll run ever executed."
+        </div>
+      </div>
+    </div>
+
+    <div class="scene">
+      <div class="scene-header">
+        <div class="scene-num">2</div>
+        <div class="scene-title">Register an Employee</div>
+        <div class="scene-time">1 min</div>
+      </div>
+      <div class="scene-body">
+        <div class="do-box">Navigate to Employees → click "Add Employee"</div>
+        <p><strong>Fill in the form:</strong></p>
+        <table>
+          <tr><th>Field</th><th>Value</th></tr>
+          <tr><td>Name</td><td>Sarah Johnson</td></tr>
+          <tr><td>Position</td><td>Software Engineer</td></tr>
+          <tr><td>Employee ID</td><td>EMP-2026-001</td></tr>
+          <tr><td>Wallet</td><td class="highlight">0x742d35Cc... (use a test address)</td></tr>
+          <tr><td>Salary</td><td>500 USDC</td></tr>
+        </table>
+        <div class="say-box">
+          "I'm registering Sarah as an employee. This transaction writes her wallet address and salary directly to the smart contract on Arc. No database — the blockchain is the source of truth."
+        </div>
+        <div class="do-box">Click "Register on Blockchain" → confirm in MetaMask</div>
+        <div class="say-box">
+          "Done. That took about 2 seconds. Sarah's record is now permanently on-chain. Any auditor, any regulator, any employee can verify it."
+        </div>
+      </div>
+    </div>
+
+    <div class="scene">
+      <div class="scene-header">
+        <div class="scene-num">3</div>
+        <div class="scene-title">Run Payroll</div>
+        <div class="scene-time">2 min</div>
+      </div>
+      <div class="scene-body">
+        <div class="do-box">Navigate to Run Payroll</div>
+        <div class="say-box">
+          "Now let's pay everyone. I select the period — this label gets recorded on-chain for accounting. October 2026."
+        </div>
+        <div class="do-box">Select October 2026 from the calendar picker</div>
+        <div class="do-box">Check all active employees in the list</div>
+        <div class="point-box">Summary: 3 employees selected, total 1,500 USDC</div>
+        <div class="say-box">
+          "The contract calculates the total automatically. My wallet balance is shown. Allowance is zero — so first I need to approve."
+        </div>
+        <div class="do-box">Click "Approve USDC" → confirm in MetaMask</div>
+        <div class="say-box">
+          "Transaction 1: I'm authorizing the contract to move USDC from my wallet. The contract never holds funds — this is the standard ERC-20 approve pattern."
+        </div>
+        <div class="do-box">Click "Execute Payroll" → confirm in MetaMask</div>
+        <div class="say-box">
+          "Transaction 2: the contract transfers USDC from my wallet directly to each selected employee. One transaction, three payments, instant settlement."
+        </div>
+      </div>
+    </div>
+
+    <div class="scene">
+      <div class="scene-header">
+        <div class="scene-num">4</div>
+        <div class="scene-title">Verify on Explorer</div>
+        <div class="scene-time">30 sec</div>
+      </div>
+      <div class="scene-body">
+        <div class="do-box">Navigate to History → click "View Transaction" on the latest run</div>
+        <div class="point-box">Status: ✅ Success | Token Transfers tab: 3 USDC transfers | Logs: SalaryPaid events</div>
+        <div class="say-box">
+          "This is the immutable record. Every salary payment, every period, permanently on-chain. No spreadsheet, no trust required. Any employee can independently verify they were paid."
+        </div>
+      </div>
+    </div>
+
+    <div class="scene">
+      <div class="scene-header">
+        <div class="scene-num">5</div>
+        <div class="scene-title">The Code (For Engineers)</div>
+        <div class="scene-time">Optional</div>
+      </div>
+      <div class="scene-body">
+        <div class="do-box">Open github.com/Hafizhzikri/InstoPay/blob/main/contracts/PayrollOS.sol</div>
+        <div class="say-box">
+          "The contract is multi-tenant — no global owner or admin. Every wallet that connects becomes its own isolated company. The contract is a public utility on Arc. Key security: ReentrancyGuard, per-transfer try/catch so one failed payment never blocks others."
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q&A -->
+  <div class="section">
+    <div class="section-label">Q&amp;A Prep</div>
+    <h2>Anticipated Questions</h2>
+
+    <div class="qa-item">
+      <div class="qa-q">"Why Arc instead of Ethereum or Base?"</div>
+      <div class="qa-a">Arc is the only chain where USDC is the native gas token. For payroll, this means employers pay fees in the same currency as salaries — no need to hold ETH. Plus sub-second finality and stable predictable fees.</div>
+    </div>
+    <div class="qa-item">
+      <div class="qa-q">"How does the employer load USDC?"</div>
+      <div class="qa-a">Currently via any wallet. V2 roadmap includes Circle Onramp Kit so companies load USDC directly with a bank transfer or card.</div>
+    </div>
+    <div class="qa-item">
+      <div class="qa-q">"What about companies without crypto wallets?"</div>
+      <div class="qa-a">Circle Developer-Controlled Wallets solves this in V2 — employers log in with email, Circle manages wallet custody transparently.</div>
+    </div>
+    <div class="qa-item">
+      <div class="qa-q">"Is this audited?"</div>
+      <div class="qa-a">Built-in security review caught and fixed two critical vulnerabilities before deployment. Not a formal third-party audit yet — that's on the roadmap for mainnet production use.</div>
+    </div>
+    <div class="qa-item">
+      <div class="qa-q">"What's the business model?"</div>
+      <div class="qa-a">Three options: (1) small protocol fee per payroll run, (2) premium features on subscription, (3) white-label licensing to HR software companies. Open to Circle's input.</div>
+    </div>
+    <div class="qa-item">
+      <div class="qa-q">"How does it handle taxes?"</div>
+      <div class="qa-a">Net salary only currently — employer calculates net pay after taxes. A tax module is on the V2 roadmap for specific jurisdictions.</div>
+    </div>
+  </div>
+
+  <!-- NUMBERS -->
+  <div class="section">
+    <div class="section-label">Key Numbers</div>
+    <h2>Numbers to Remember</h2>
+    <table>
+      <tr><th>Metric</th><th>Value</th></tr>
+      <tr><td>Settlement time</td><td class="green">&lt; 3 seconds</td></tr>
+      <tr><td>Gas cost per payroll run (Arc)</td><td class="green">~$0.005</td></tr>
+      <tr><td>Traditional wire transfer fee</td><td>$25–50</td></tr>
+      <tr><td>Traditional payroll settlement</td><td>2–5 business days</td></tr>
+      <tr><td>Contract: PayrollOS (Arc Testnet)</td><td class="highlight">0xbf5888844e...</td></tr>
+      <tr><td>Contract: PayrollOS (Arc Mainnet)</td><td class="highlight">0x583F852E0b...</td></tr>
+      <tr><td>Time to build with Arc Studio</td><td class="green">1 session</td></tr>
+    </table>
+  </div>
+
+</div>
+
+<footer>
+  <p style="color:white; font-weight:800; font-size:18px; margin-bottom:8px;">InstoPay</p>
+  <p>
+    <a href="https://instopayapp.vercel.app">🚀 Live App</a> &nbsp;·&nbsp;
+    <a href="/pitch.html">📊 Pitch Deck</a> &nbsp;·&nbsp;
+    <a href="https://github.com/Hafizhzikri/InstoPay">📦 GitHub</a>
+  </p>
+  <p style="margin-top:16px; font-size:12px;">ezzasususgm@gmail.com &nbsp;·&nbsp; Built with Arc Studio by Circle</p>
+</footer>
+
+<script>
+  function toggle(el) {
+    el.classList.toggle('checked');
+  }
+</script>
+
+</body>
+</html>
