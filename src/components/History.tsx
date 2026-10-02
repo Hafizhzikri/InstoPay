@@ -6,12 +6,13 @@ import {
   DollarSign,
   Users,
 } from 'lucide-react';
-import { useAccount, useReadContract } from 'wagmi';
+import { useAccount, useReadContract, usePublicClient } from 'wagmi';
 import { ConnectKitButton } from 'connectkit';
-import { formatUnits } from 'viem';
+import { formatUnits, parseAbiItem } from 'viem';
 import { useRunCount } from '../hooks/usePayrollContract';
 import { PAYROLLOS_ABI, USDC_DECIMALS, getChainConfig } from '../contract';
 import { useChain } from '../hooks/useChain';
+import { useState, useEffect } from 'react';
 
 interface RunData {
   runId: bigint;
@@ -24,16 +25,75 @@ interface RunData {
 
 /**
  * Returns the tx hash for a specific payroll run.
- * Reads ONLY from localStorage — written by RunPayroll on success.
- * No RPC scanning. For old runs without a cached hash, returns undefined immediately.
+ * 1. Check localStorage first (instant).
+ * 2. If not cached, scan onchain for PayrollRun event with matching runId (once).
+ *    Cache result (or "not_found") to localStorage so we never scan again for this run.
  */
+const PAYROLL_RUN_EVENT = parseAbiItem(
+  'event PayrollRun(address indexed company, uint256 indexed runId, string period, uint256 totalAmount, uint256 employeeCount, uint256 timestamp)'
+);
+
 function usePayrollRunTxHash(company: `0x${string}`, runId: bigint, chainId: number) {
   const storageKey = `payroll_tx_${chainId}_${company.toLowerCase()}_${runId.toString()}`;
-  const cached = (() => {
+  const notFoundKey = `payroll_tx_nf_${chainId}_${company.toLowerCase()}_${runId.toString()}`;
+  const publicClient = usePublicClient({ chainId });
+  const { payrollosAddress } = getChainConfig(chainId);
+
+  const getCached = () => {
     try { return localStorage.getItem(storageKey) as `0x${string}` | null; }
     catch { return null; }
-  })();
-  return { txHash: cached ?? undefined, searching: false };
+  };
+  const isNotFound = () => {
+    try { return localStorage.getItem(notFoundKey) === '1'; }
+    catch { return false; }
+  };
+
+  const [txHash, setTxHash] = useState<`0x${string}` | undefined>(getCached() ?? undefined);
+  const [searching, setSearching] = useState(!getCached() && !isNotFound());
+
+  useEffect(() => {
+    // Already have hash or already confirmed not found
+    if (getCached() || isNotFound()) {
+      setSearching(false);
+      return;
+    }
+    if (!publicClient || !payrollosAddress) { setSearching(false); return; }
+
+    let cancelled = false;
+    const scan = async () => {
+      setSearching(true);
+      try {
+        const latest = await publicClient.getBlockNumber();
+        // Scan last 50,000 blocks — covers ~months of Arc Testnet activity
+        const from = latest > 50000n ? latest - 50000n : 0n;
+        const logs = await publicClient.getLogs({
+          address: payrollosAddress,
+          event: PAYROLL_RUN_EVENT,
+          args: { company, runId },
+          fromBlock: from,
+          toBlock: 'latest',
+        });
+        if (cancelled) return;
+        if (logs.length > 0 && logs[0].transactionHash) {
+          const hash = logs[0].transactionHash;
+          try { localStorage.setItem(storageKey, hash); } catch { /* ignore */ }
+          setTxHash(hash);
+        } else {
+          // Not found in last 50k blocks — cache as not_found
+          try { localStorage.setItem(notFoundKey, '1'); } catch { /* ignore */ }
+        }
+      } catch {
+        // RPC error — just skip
+      } finally {
+        if (!cancelled) setSearching(false);
+      }
+    };
+    void scan();
+    return () => { cancelled = true; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chainId, company, runId.toString(), payrollosAddress]);
+
+  return { txHash, searching };
 }
 
 function PayrollRunCard({ company, runId, chainId, chainName, explorerBase }: {
@@ -49,7 +109,7 @@ function PayrollRunCard({ company, runId, chainId, chainName, explorerBase }: {
     chainId,
   });
 
-  const { txHash } = usePayrollRunTxHash(company, runId, chainId);
+  const { txHash, searching } = usePayrollRunTxHash(company, runId, chainId);
   const run = data as RunData | undefined;
 
   if (isLoading) {
@@ -132,13 +192,18 @@ function PayrollRunCard({ company, runId, chainId, chainName, explorerBase }: {
           >
             View Transaction <ExternalLink className="size-3" />
           </a>
+        ) : searching ? (
+          <span className="flex items-center gap-1 text-xs" style={{ color: 'var(--muted)' }}>
+            <span className="size-3 rounded-full border border-t-transparent animate-spin inline-block" style={{ borderColor: 'var(--accent)', borderTopColor: 'transparent' }} />
+            Finding tx...
+          </span>
         ) : (
           <a
             href={`${explorerBase}/address/${payrollosAddress}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1 text-xs font-medium"
-            style={{ color: 'var(--accent)' }}
+            style={{ color: 'var(--muted)' }}
           >
             ArcScan <ExternalLink className="size-3" />
           </a>
