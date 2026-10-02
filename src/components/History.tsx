@@ -25,17 +25,17 @@ interface RunData {
 
 /**
  * Returns the tx hash for a specific payroll run.
- * 1. Check localStorage first (instant).
- * 2. If not cached, scan onchain for PayrollRun event with matching runId (once).
- *    Cache result (or "not_found") to localStorage so we never scan again for this run.
+ * Priority:
+ * 1. localStorage (instant, browser cache)
+ * 2. /api/tx-cache (Upstash Redis — permanent, cross-browser, cross-device)
+ * 3. Onchain scan via getLogs (fallback, saves to Redis + localStorage)
  */
 const PAYROLL_RUN_EVENT = parseAbiItem(
-  'event PayrollRun(address indexed company, uint256 indexed runId, string period, uint256 totalAmount, uint256 employeeCount, uint256 timestamp)'
+  'event PayrollExecuted(address indexed company, uint256 indexed runId, string period, uint256 totalAmount, uint256 employeeCount)'
 );
 
 function usePayrollRunTxHash(company: `0x${string}`, runId: bigint, chainId: number) {
   const storageKey = `payroll_tx_${chainId}_${company.toLowerCase()}_${runId.toString()}`;
-  const notFoundKey = `payroll_tx_nf_${chainId}_${company.toLowerCase()}_${runId.toString()}`;
   const publicClient = usePublicClient({ chainId });
   const { payrollosAddress } = getChainConfig(chainId);
 
@@ -43,38 +43,35 @@ function usePayrollRunTxHash(company: `0x${string}`, runId: bigint, chainId: num
     try { return localStorage.getItem(storageKey) as `0x${string}` | null; }
     catch { return null; }
   };
-  const isNotFound = () => {
-    try { return localStorage.getItem(notFoundKey) === '1'; }
-    catch { return false; }
-  };
-
-  // Clear stale "not_found" cache so re-scan happens with correct event name
-  const clearStaleCache = () => {
-    try {
-      if (localStorage.getItem(notFoundKey) === '1') {
-        localStorage.removeItem(notFoundKey);
-      }
-    } catch { /* ignore */ }
-  };
-  clearStaleCache();
 
   const [txHash, setTxHash] = useState<`0x${string}` | undefined>(getCached() ?? undefined);
-  const [searching, setSearching] = useState(!getCached() && !isNotFound());
+  const [searching, setSearching] = useState(!getCached());
 
   useEffect(() => {
-    // Already have hash or already confirmed not found
-    if (getCached() || isNotFound()) {
-      setSearching(false);
-      return;
-    }
-    if (!publicClient || !payrollosAddress) { setSearching(false); return; }
+    if (getCached()) { setSearching(false); return; }
+    if (!payrollosAddress) { setSearching(false); return; }
 
     let cancelled = false;
-    const scan = async () => {
+    const lookup = async () => {
       setSearching(true);
       try {
+        // Step 1: Ask Redis cache via API route
+        const apiRes = await fetch(
+          `/api/tx-cache?chainId=${chainId}&company=${company.toLowerCase()}&runId=${runId.toString()}`
+        );
+        if (!cancelled && apiRes.ok) {
+          const data = await apiRes.json() as { txHash: string | null };
+          if (data.txHash) {
+            try { localStorage.setItem(storageKey, data.txHash); } catch { /* ignore */ }
+            setTxHash(data.txHash as `0x\${string}`);
+            setSearching(false);
+            return;
+          }
+        }
+
+        // Step 2: Scan onchain
+        if (!publicClient) { setSearching(false); return; }
         const latest = await publicClient.getBlockNumber();
-        // Scan last 200,000 blocks — covers extensive Arc Testnet history
         const from = latest > 200000n ? latest - 200000n : 0n;
         const logs = await publicClient.getLogs({
           address: payrollosAddress,
@@ -88,17 +85,25 @@ function usePayrollRunTxHash(company: `0x${string}`, runId: bigint, chainId: num
           const hash = logs[0].transactionHash;
           try { localStorage.setItem(storageKey, hash); } catch { /* ignore */ }
           setTxHash(hash);
-        } else {
-          // Not found in last 50k blocks — cache as not_found
-          try { localStorage.setItem(notFoundKey, '1'); } catch { /* ignore */ }
+          // Save to Redis so all future browsers get it instantly
+          fetch('/api/tx-cache', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              chainId,
+              company: company.toLowerCase(),
+              runId: Number(runId),
+              txHash: hash,
+            }),
+          }).catch(() => { /* ignore */ });
         }
       } catch {
-        // RPC error — just skip
+        // Network or RPC error — skip silently
       } finally {
         if (!cancelled) setSearching(false);
       }
     };
-    void scan();
+    void lookup();
     return () => { cancelled = true; };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chainId, company, runId.toString(), payrollosAddress]);
