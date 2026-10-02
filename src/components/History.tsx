@@ -30,7 +30,7 @@ interface RunData {
  *    Cache result (or "not_found") to localStorage so we never scan again for this run.
  */
 const PAYROLL_RUN_EVENT = parseAbiItem(
-  'event PayrollExecuted(address indexed company, uint256 indexed runId, string period, uint256 totalAmount, uint256 employeeCount)'
+  'event PayrollRun(address indexed company, uint256 indexed runId, string period, uint256 totalAmount, uint256 employeeCount, uint256 timestamp)'
 );
 
 function usePayrollRunTxHash(company: `0x${string}`, runId: bigint, chainId: number) {
