@@ -30,7 +30,7 @@ interface RunData {
  *    Cache result (or "not_found") to localStorage so we never scan again for this run.
  */
 const PAYROLL_RUN_EVENT = parseAbiItem(
-  'event PayrollRun(address indexed company, uint256 indexed runId, string period, uint256 totalAmount, uint256 employeeCount, uint256 timestamp)'
+  'event PayrollExecuted(address indexed company, uint256 indexed runId, string period, uint256 totalAmount, uint256 employeeCount)'
 );
 
 function usePayrollRunTxHash(company: `0x${string}`, runId: bigint, chainId: number) {
@@ -48,6 +48,16 @@ function usePayrollRunTxHash(company: `0x${string}`, runId: bigint, chainId: num
     catch { return false; }
   };
 
+  // Clear stale "not_found" cache so re-scan happens with correct event name
+  const clearStaleCache = () => {
+    try {
+      if (localStorage.getItem(notFoundKey) === '1') {
+        localStorage.removeItem(notFoundKey);
+      }
+    } catch { /* ignore */ }
+  };
+  clearStaleCache();
+
   const [txHash, setTxHash] = useState<`0x${string}` | undefined>(getCached() ?? undefined);
   const [searching, setSearching] = useState(!getCached() && !isNotFound());
 
@@ -64,8 +74,8 @@ function usePayrollRunTxHash(company: `0x${string}`, runId: bigint, chainId: num
       setSearching(true);
       try {
         const latest = await publicClient.getBlockNumber();
-        // Scan last 50,000 blocks — covers ~months of Arc Testnet activity
-        const from = latest > 50000n ? latest - 50000n : 0n;
+        // Scan last 200,000 blocks — covers extensive Arc Testnet history
+        const from = latest > 200000n ? latest - 200000n : 0n;
         const logs = await publicClient.getLogs({
           address: payrollosAddress,
           event: PAYROLL_RUN_EVENT,
