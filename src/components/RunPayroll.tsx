@@ -38,7 +38,12 @@ import {
 } from '../hooks/useAttendanceContract';
 import { USDC_DECIMALS, PAYROLLOS_ADDRESS } from '../contract';
 import { useChain } from '../hooks/useChain';
-import { buildTxExplorerUrl } from '@/onchain-facts';
+
+
+function buildTxExplorerUrl(chainId: number, hash?: string): string {
+  const base = chainId === 2222 ? 'https://arcscan.app' : 'https://testnet.arcscan.app';
+  return hash ? `${base}/tx/${hash}` : `${base}`;
+}
 
 function decodeName(raw: string): string { return raw.split('||')[0] ?? raw; }
 function decodeJabatan(raw: string): string { return raw.split('||')[1] ?? ''; }
@@ -186,15 +191,32 @@ export function RunPayroll() {
       if (runHash) {
         setRunHashSaved(runHash);
         // Persist tx hash so History page can link to the correct transaction
-        // Key format: payroll_tx_<chainId>_<company>_<nextRunId>
+        // Key format: payroll_tx_<chainId>_<company>_<runId>
+        // runCount at this point reflects the completed run (already incremented onchain)
         if (address) {
-          const nextRunId = ((runCount ?? 0n) + 1n).toString();
-          try {
-            localStorage.setItem(
-              `payroll_tx_${chainId}_${address.toLowerCase()}_${nextRunId}`,
-              runHash
-            );
-          } catch { /* storage full or private mode — ignore */ }
+          // Save for both possible runId values (runCount and runCount+1) to handle
+          // timing differences between when receipt arrives vs when runCount updates
+          const ids = [
+            (runCount ?? 0n).toString(),
+            ((runCount ?? 0n) + 1n).toString(),
+          ];
+          ids.forEach(rid => {
+            try {
+              localStorage.setItem(
+                `payroll_tx_${chainId}_${address.toLowerCase()}_${rid}`,
+                runHash
+              );
+            } catch { /* storage full or private mode — ignore */ }
+          });
+          // Also save to Redis for cross-browser/cross-device access
+          const runIdNum = Number(runCount ?? 0n);
+          [runIdNum, runIdNum + 1].forEach(rid => {
+            fetch('/api/tx-cache', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ chainId, company: address.toLowerCase(), runId: rid, txHash: runHash }),
+            }).catch(() => {/* ignore */});
+          });
         }
       }
       void refetchBal(); void refetchAllow(); void refetchEmp();

@@ -31,7 +31,7 @@ interface RunData {
  * 3. Onchain scan via getLogs (fallback, saves to Redis + localStorage)
  */
 const PAYROLL_RUN_EVENT = parseAbiItem(
-  'event PayrollExecuted(address indexed company, uint256 indexed runId, string period, uint256 totalAmount, uint256 employeeCount)'
+  'event PayrollRun(address indexed company, uint256 indexed runId, string period, uint256 totalAmount, uint256 employeeCount, uint256 timestamp)'
 );
 
 function usePayrollRunTxHash(company: `0x${string}`, runId: bigint, chainId: number) {
@@ -69,18 +69,34 @@ function usePayrollRunTxHash(company: `0x${string}`, runId: bigint, chainId: num
           }
         }
 
-        // Step 2: Scan onchain
+        // Step 2: Scan onchain in 5000-block chunks (Arc RPC limit)
         if (!publicClient) { setSearching(false); return; }
         const latest = await publicClient.getBlockNumber();
-        const from = latest > 200000n ? latest - 200000n : 0n;
-        const logs = await publicClient.getLogs({
-          address: payrollosAddress,
-          event: PAYROLL_RUN_EVENT,
-          args: { company, runId },
-          fromBlock: from,
-          toBlock: 'latest',
-        });
+        const CHUNK = 5000n;
+        const MAX_CHUNKS = 40; // scan up to 200,000 blocks back
+        let foundHash: `0x${string}` | undefined;
+        let to = latest;
+        for (let i = 0; i < MAX_CHUNKS; i++) {
+          if (cancelled) return;
+          const from = to > CHUNK ? to - CHUNK : 0n;
+          try {
+            const chunkLogs = await publicClient.getLogs({
+              address: payrollosAddress,
+              event: PAYROLL_RUN_EVENT,
+              args: { company, runId },
+              fromBlock: from,
+              toBlock: to,
+            });
+            if (chunkLogs.length > 0 && chunkLogs[0].transactionHash) {
+              foundHash = chunkLogs[0].transactionHash;
+              break;
+            }
+          } catch { /* chunk failed, skip */ }
+          if (from === 0n) break;
+          to = from - 1n;
+        }
         if (cancelled) return;
+        const logs = foundHash ? [{ transactionHash: foundHash }] : [];
         if (logs.length > 0 && logs[0].transactionHash) {
           const hash = logs[0].transactionHash;
           try { localStorage.setItem(storageKey, hash); } catch { /* ignore */ }
